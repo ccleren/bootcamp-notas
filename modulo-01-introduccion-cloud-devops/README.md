@@ -53,7 +53,20 @@ Tres ejes: **cómputo** (tiempo usado), **almacenamiento** (GB guardados), **sal
 
 ## Comandos clave
 
-*(No aplica — módulo puramente conceptual.)*
+Primeros pasos con AWS CLI (base para todos los módulos siguientes):
+
+```bash
+# Instalar (Linux) y comprobar versión
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip && sudo ./aws/install
+aws --version
+
+# Configurar credenciales (pide Access Key ID, Secret, región y formato de salida)
+aws configure
+
+# Comprobar qué identidad/cuenta está usando la CLI ahora mismo
+aws sts get-caller-identity
+```
 
 ## Notas y gotchas
 

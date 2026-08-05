@@ -37,7 +37,22 @@ Tu propia red aislada dentro de AWS: eliges rango de IPs, subredes, tablas de ru
 
 ## Comandos clave
 
-*(No aplica — base teórica. Security Groups, NACLs, Internet Gateway y NAT se ven en [[modulo-06-ec2-basico]] y módulos posteriores.)*
+```bash
+# Crear una VPC con un rango /16
+aws ec2 create-vpc --cidr-block 10.1.0.0/16
+
+# Crear una subred dentro de esa VPC, en una AZ concreta
+aws ec2 create-subnet \
+  --vpc-id vpc-xxxxxxxx \
+  --cidr-block 10.1.0.0/24 \
+  --availability-zone eu-west-1a
+
+# Listar VPCs y subredes existentes
+aws ec2 describe-vpcs
+aws ec2 describe-subnets --filters "Name=vpc-id,Values=vpc-xxxxxxxx"
+```
+
+*(Security Groups, NACLs, Internet Gateway y NAT se ven en [[modulo-06-ec2-basico]] y módulos posteriores.)*
 
 ## Notas y gotchas
 

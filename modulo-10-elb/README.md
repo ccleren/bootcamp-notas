@@ -76,7 +76,32 @@ CloudWatch recibe automático: códigos 2XX-5XX, `HealthyHostCount`/`UnHealthyHo
 
 ## Comandos clave
 
-*(No aplica — configuración vía consola: ALB/NLB, target groups, listeners, health checks.)*
+```bash
+# Crear un Application Load Balancer
+aws elbv2 create-load-balancer \
+  --name mi-alb --subnets subnet-xxxx subnet-yyyy \
+  --security-groups sg-xxxxxxxx --type application
+
+# Crear un target group con health check
+aws elbv2 create-target-group \
+  --name mi-target-group --protocol HTTP --port 80 --vpc-id vpc-xxxxxxxx \
+  --health-check-path /health
+
+# Registrar instancias en el target group
+aws elbv2 register-targets \
+  --target-group-arn arn:aws:elasticloadbalancing:...:targetgroup/mi-target-group/xxxx \
+  --targets Id=i-xxxxxxxxxxxxxxxxx
+
+# Crear el listener (regla de entrada del LB)
+aws elbv2 create-listener \
+  --load-balancer-arn arn:aws:elasticloadbalancing:...:loadbalancer/app/mi-alb/xxxx \
+  --protocol HTTP --port 80 \
+  --default-actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:...:targetgroup/mi-target-group/xxxx
+
+# Ver el estado de salud de los targets
+aws elbv2 describe-target-health \
+  --target-group-arn arn:aws:elasticloadbalancing:...:targetgroup/mi-target-group/xxxx
+```
 
 ## Notas y gotchas
 

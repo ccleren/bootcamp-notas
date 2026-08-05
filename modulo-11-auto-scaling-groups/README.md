@@ -33,7 +33,36 @@ Para propagar un cambio (ej. cambiar el tipo de instancia de la plantilla) sin t
 
 ## Comandos clave
 
-*(Pendiente — añadir comandos de AWS CLI/Terraform de la demo práctica, ej. `aws autoscaling create-auto-scaling-group`, `aws autoscaling put-scaling-policy`, `aws autoscaling start-instance-refresh`.)*
+```bash
+# Crear una plantilla de lanzamiento
+aws ec2 create-launch-template \
+  --launch-template-name mi-plantilla \
+  --launch-template-data file://launch-template-data.json
+
+# Crear el Auto Scaling Group a partir de esa plantilla
+aws autoscaling create-auto-scaling-group \
+  --auto-scaling-group-name mi-asg \
+  --launch-template LaunchTemplateName=mi-plantilla,Version='$Latest' \
+  --min-size 1 --max-size 5 --desired-capacity 2 \
+  --vpc-zone-identifier "subnet-xxxx,subnet-yyyy" \
+  --target-group-arns arn:aws:elasticloadbalancing:...:targetgroup/mi-target-group/xxxx
+
+# Política de target tracking (ej. mantener CPU media al 40%)
+aws autoscaling put-scaling-policy \
+  --auto-scaling-group-name mi-asg --policy-name cpu-target-tracking \
+  --policy-type TargetTrackingScaling \
+  --target-tracking-configuration '{"PredefinedMetricSpecification":{"PredefinedMetricType":"ASGAverageCPUUtilization"},"TargetValue":40.0}'
+
+# Lanzar un Instance Refresh tras actualizar la plantilla
+aws autoscaling start-instance-refresh \
+  --auto-scaling-group-name mi-asg \
+  --preferences '{"MinHealthyPercentage":70}'
+
+# Ver el estado del grupo
+aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names mi-asg
+```
+
+*(Cuando hagas la demo práctica de este módulo, sustituye estos ejemplos por tus propios comandos reales.)*
 
 ## Notas y gotchas
 

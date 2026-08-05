@@ -69,6 +69,25 @@ Cada minuto, automático, no desactivable. Si falla alguno → `Impaired`.
 
 ## Comandos clave
 
+### Instancias Spot por CLI
+```bash
+# Ver el histórico de precio Spot de un tipo de instancia
+aws ec2 describe-spot-price-history \
+  --instance-types t3.micro --product-descriptions "Linux/UNIX" \
+  --start-time $(date -u +%Y-%m-%dT%H:%M:%S)
+
+# Solicitar una instancia Spot con precio máximo
+aws ec2 request-spot-instances \
+  --spot-price "0.01" --instance-count 1 \
+  --launch-specification file://spot-spec.json
+
+# Ver el estado de las solicitudes Spot
+aws ec2 describe-spot-instance-requests
+
+# Cancelar la solicitud (no termina las instancias ya lanzadas)
+aws ec2 cancel-spot-instance-requests --spot-instance-request-ids sir-xxxxxxxx
+```
+
 ### CloudWatch Agent (Amazon Linux 2)
 ```bash
 # Rol IAM: CloudWatchAgentServerPolicy (+ Admin si guardas config en SSM)

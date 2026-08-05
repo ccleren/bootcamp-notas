@@ -40,7 +40,16 @@ Puntos de presencia mucho más numerosos que las regiones, para servir contenido
 
 ## Comandos clave
 
-*(No aplica — módulo conceptual.)*
+```bash
+# Listar todas las regiones disponibles para tu cuenta
+aws ec2 describe-regions --output table
+
+# Listar las AZ de la región configurada actualmente
+aws ec2 describe-availability-zones --output table
+
+# Ver qué región/perfil está usando la CLI ahora mismo
+aws configure list
+```
 
 ## Notas y gotchas
 

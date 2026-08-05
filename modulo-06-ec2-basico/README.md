@@ -71,6 +71,23 @@ ssh -i /path/key-pair-name.pem ec2-user@instance-public-dns-name
 chmod 400 nombre-del-archivo.pem
 ```
 
+Gestionar instancias por CLI (alternativa a la consola):
+```bash
+# Lanzar una instancia con User Data
+aws ec2 run-instances \
+  --image-id ami-xxxxxxxx --instance-type t2.micro \
+  --key-name mi-clave --security-group-ids sg-xxxxxxxx \
+  --subnet-id subnet-xxxxxxxx \
+  --user-data file://user-data.sh
+
+# Ver el estado de las instancias
+aws ec2 describe-instances --query "Reservations[].Instances[].[InstanceId,State.Name]"
+
+# Parar / terminar
+aws ec2 stop-instances --instance-ids i-xxxxxxxxxxxxxxxxx
+aws ec2 terminate-instances --instance-ids i-xxxxxxxxxxxxxxxxx
+```
+
 ## Notas y gotchas
 
 - User Data solo corre en el primer arranque — para repetir en cada reinicio hace falta otra estrategia (ej. servicio systemd).

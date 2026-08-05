@@ -36,7 +36,28 @@ JSON/YAML con pasos secuenciales y parámetros dinámicos, versionables. Usados 
 
 ## Comandos clave
 
-*(No hay CLI específica en el material del curso — práctica vía consola: Session Manager / Run Command sobre una instancia con rol `AmazonSSMManagedInstanceCore`.)*
+```bash
+# Ver qué instancias están registradas en SSM (agente + rol correctos)
+aws ssm describe-instance-information
+
+# Conectarte a una instancia sin SSH, vía Session Manager
+aws ssm start-session --target i-xxxxxxxxxxxxxxxxx
+
+# Ejecutar un comando remoto en varias instancias por tag
+aws ssm send-command \
+  --document-name "AWS-RunShellScript" \
+  --targets "Key=tag:Environment,Values=Prod" \
+  --parameters commands="sudo yum update -y"
+
+# Ver el resultado de un comando lanzado con Run Command
+aws ssm get-command-invocation \
+  --command-id <command-id> --instance-id i-xxxxxxxxxxxxxxxxx
+
+# Aplicar parches manualmente a una instancia (Patch Manager)
+aws ssm send-command --document-name "AWS-RunPatchBaseline" \
+  --targets "Key=instanceIds,Values=i-xxxxxxxxxxxxxxxxx" \
+  --parameters "Operation=Install"
+```
 
 ## Notas y gotchas
 

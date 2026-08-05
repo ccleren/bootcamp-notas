@@ -41,7 +41,29 @@ Automatiza gobernanza multi-cuenta a gran escala, orquestando Organizations + IA
 
 ## Comandos clave
 
-*(No aplica — práctica en consola: Organizations, SCPs, IAM Identity Center.)*
+```bash
+# Crear la organización (desde la cuenta de gestión)
+aws organizations create-organization --feature-set ALL
+
+# Crear una cuenta miembro nueva
+aws organizations create-account \
+  --email produccion+cuenta@midominio.com \
+  --account-name "Produccion"
+
+# Crear una Unidad Organizativa (OU) bajo la raíz
+aws organizations create-organizational-unit \
+  --parent-id r-xxxx --name "Produccion-OU"
+
+# Crear y aplicar un SCP
+aws organizations create-policy \
+  --name DenyS3 --type SERVICE_CONTROL_POLICY \
+  --content file://deny-s3.json
+aws organizations attach-policy \
+  --policy-id p-xxxxxxxx --target-id ou-xxxx-xxxxxxxx
+
+# Listar cuentas de la organización
+aws organizations list-accounts
+```
 
 ## Notas y gotchas
 

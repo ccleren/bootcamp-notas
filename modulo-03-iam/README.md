@@ -57,7 +57,38 @@ IAM = servicio **global** que decide quién puede hacer qué dentro de tu cuenta
 
 ## Comandos clave
 
-*(No hay CLI en las slides — práctica en consola: crear usuarios, grupos, políticas y roles.)*
+```bash
+# Usuarios y grupos
+aws iam create-user --user-name juan
+aws iam create-group --group-name Desarrolladores
+aws iam add-user-to-group --user-name juan --group-name Desarrolladores
+
+# Adjuntar una política gestionada por AWS a un grupo
+aws iam attach-group-policy \
+  --group-name Desarrolladores \
+  --policy-arn arn:aws:iam::aws:policy/ReadOnlyAccess
+
+# Crear una política propia a partir de un JSON local
+aws iam create-policy \
+  --policy-name MiPolitica \
+  --policy-document file://politica.json
+
+# Crear un rol para que lo asuma un servicio (ej. EC2)
+aws iam create-role \
+  --role-name RolParaEC2 \
+  --assume-role-policy-document file://trust-policy.json
+aws iam attach-role-policy \
+  --role-name RolParaEC2 \
+  --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+
+# Access Keys para un usuario (para CLI/SDK)
+aws iam create-access-key --user-name juan
+
+# Auditoría
+aws iam generate-credential-report
+aws iam get-credential-report
+aws iam list-users
+```
 
 ## Notas y gotchas
 

@@ -55,7 +55,27 @@ Almacenamiento físico conectado al host — muy rápido, pero **no persistente*
 
 ## Comandos clave
 
-Montar un EFS en dos instancias EC2 (Amazon Linux, `dnf`):
+### EBS por CLI
+```bash
+# Crear un volumen gp3 de 50GB en una AZ concreta
+aws ec2 create-volume --volume-type gp3 --size 50 --availability-zone eu-west-1a
+
+# Adjuntarlo a una instancia
+aws ec2 attach-volume \
+  --volume-id vol-xxxxxxxx --instance-id i-xxxxxxxxxxxxxxxxx --device /dev/sdf
+
+# Crear un snapshot del volumen
+aws ec2 create-snapshot --volume-id vol-xxxxxxxx --description "backup manual"
+
+# Aumentar tamaño/IOPS de un volumen existente (nunca reducir)
+aws ec2 modify-volume --volume-id vol-xxxxxxxx --size 100
+
+# Listar volúmenes y snapshots
+aws ec2 describe-volumes
+aws ec2 describe-snapshots --owner-ids self
+```
+
+### Montar un EFS en dos instancias EC2 (Amazon Linux, `dnf`)
 
 ```bash
 # En cada instancia
