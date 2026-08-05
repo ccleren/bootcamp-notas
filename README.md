@@ -1,19 +1,17 @@
 # Bootcamp Cloud/DevOps — Notas y Repaso
 
-Repositorio personal de apuntes, resúmenes y comandos del bootcamp de Cloud/DevOps (AWS). El objetivo es tener un lugar de repaso rápido y evitar tener que repasar el material completo del curso cada vez que necesito recordar algo.
-
-No contiene el material oficial del curso (PDFs, código de los profesores) — solo mis propias notas.
+Repositorio personal de apuntes, resúmenes y comandos del bootcamp de Cloud/DevOps. El objetivo es tener un lugar de repaso rápido y evitar tener que repasar el material completo del curso cada vez que necesito recordar algo.
 
 ## Cómo se usa
 
 Cada módulo tiene su propia carpeta con un `README.md` (basado en `_plantilla.md`). Lo actualizo mientras avanzo:
 
-- **Resumen**: qué es el tema y para qué sirve, en mis palabras.
-- **Comandos clave**: los comandos/CLI que uso o que se me olvidan fácil.
+- **Resumen**: qué es el tema y para qué sirve.
+- **Comandos clave**: los comandos/CLI que uso o que se olvidan.
 - **Notas y gotchas**: cosas que me sorprendieron, errores típicos, decisiones de diseño.
-- **Recursos**: enlaces o referencias que quiero volver a consultar.
+- **Recursos**: enlaces o referencias.
 
-Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/README.md` y lo relleno según avanzo (no hace falta esperar a terminar el módulo).
+Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/README.md` y lo relleno según avanzo.
 
 ## Progreso
 
@@ -31,9 +29,7 @@ Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/READM
 | 10 | Elastic Load Balancing (ELB) | ✅ Completo |
 | 11 | Auto Scaling Groups (ASG) | 🟡 Comandos genéricos — pendiente sustituir por los de tu demo real |
 
-Leyenda: 🟢 en curso · 🟡 con notas parciales · ✅ completo
-
-Los módulos 1-10 se redactaron a partir de `Bootcamp-v4.pdf` (slides del curso) combinado con mis propios scripts/comandos de las demos prácticas. El módulo 11 en adelante se actualiza en tiempo real conforme avanzo.
+Leyenda: 🟡 en curso · ✅ completo
 
 ## Estructura
 
