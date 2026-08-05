@@ -89,18 +89,18 @@ aws elbv2 create-target-group \
 
 # Registrar instancias en el target group
 aws elbv2 register-targets \
-  --target-group-arn arn:aws:elasticloadbalancing:...:targetgroup/mi-target-group/xxxx \
+  --target-group-arn arn:aws:elasticloadbalancing:eu-west-1:123456789012:targetgroup/mi-target-group/50dc6c495c0c9188 \
   --targets Id=i-xxxxxxxxxxxxxxxxx
 
 # Crear el listener (regla de entrada del LB)
 aws elbv2 create-listener \
-  --load-balancer-arn arn:aws:elasticloadbalancing:...:loadbalancer/app/mi-alb/xxxx \
+  --load-balancer-arn arn:aws:elasticloadbalancing:eu-west-1:123456789012:loadbalancer/app/mi-alb/50dc6c495c0c9188 \
   --protocol HTTP --port 80 \
-  --default-actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:...:targetgroup/mi-target-group/xxxx
+  --default-actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:eu-west-1:123456789012:targetgroup/mi-target-group/50dc6c495c0c9188
 
 # Ver el estado de salud de los targets
 aws elbv2 describe-target-health \
-  --target-group-arn arn:aws:elasticloadbalancing:...:targetgroup/mi-target-group/xxxx
+  --target-group-arn arn:aws:elasticloadbalancing:eu-west-1:123456789012:targetgroup/mi-target-group/50dc6c495c0c9188
 ```
 
 ## Notas y gotchas

@@ -57,6 +57,7 @@ aws organizations create-organizational-unit \
 # Crear y aplicar un SCP
 aws organizations create-policy \
   --name DenyS3 --type SERVICE_CONTROL_POLICY \
+  --description "Deniega el acceso a S3" \
   --content file://deny-s3.json
 aws organizations attach-policy \
   --policy-id p-xxxxxxxx --target-id ou-xxxx-xxxxxxxx
