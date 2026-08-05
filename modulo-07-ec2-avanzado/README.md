@@ -37,6 +37,35 @@
 - **InsufficientInstanceCapacity** → esperar, dividir la solicitud, probar otro tipo de instancia o cambiar de AZ.
 - **La instancia termina inmediatamente** → snapshot EBS dañado, volumen root cifrado sin permisos KMS, AMI incompleta, o límite de volúmenes EBS alcanzado.
 
+### Instancias de rendimiento de ráfaga (Burstable — familia T)
+- Instancias tipo `T` (T2, T3, T3a, T4g...) que no necesitan alto rendimiento constante: acumulan **créditos de CPU** cuando usan poca CPU, y los consumen cuando necesitan un pico ("burst") por encima de su rendimiento base.
+- Si se agotan los créditos, la instancia vuelve a su rendimiento **base** (más bajo). Si esto pasa constantemente, toca migrar a otro tipo de instancia.
+- Casos de uso: servidores web con tráfico variable, microservicios, BBDD pequeñas.
+- **Modo Unlimited**: permite seguir con rendimiento alto aunque se agoten los créditos, pagando un extra — útil para carga impredecible, pero ⚠️ puede disparar el coste si no se monitoriza.
+
+### Métricas de CloudWatch para EC2
+- **Automáticas** (las manda AWS): CPU, red, disco (solo disco local), verificación de estado — cada 5 min por defecto, cada 1 min con monitorización detallada (de pago).
+- **Personalizadas** (las mandas tú, requieren permisos IAM): RAM, datos de la propia app, usuarios conectados, etc. — resolución configurable hasta por segundo.
+- ⚠️ **La métrica de RAM no está incluida por defecto** en ninguna de las automáticas — de ahí la necesidad del CloudWatch Agent.
+
+### Agente unificado de CloudWatch
+- Se instala en la EC2 (o servidor on-prem) para enviar **métricas adicionales y logs** a CloudWatch que no vienen por defecto.
+- Requiere permisos IAM; se puede configurar centralizadamente vía SSM Parameter Store — ver [[modulo-08-aws-systems-manager]].
+- **Plugin `procstat`**: monitoriza procesos concretos (CPU, memoria, nº hilos, estado). Identifica el proceso por `pid_file`, `exe` o `pattern`. Métricas típicas: `procstat_cpu_time`, `procstat_cpu_usage`, `procstat_memory_rss`.
+
+### Comprobaciones de estado de EC2 (Health Checks) 🚨 tema de examen
+Se ejecutan automáticamente cada minuto, no se pueden deshabilitar. Si todas pasan → `OK`; si alguna falla → `Impaired`.
+
+| Tipo | Qué comprueba | Ejemplo de fallo |
+|---|---|---|
+| **Instancia** (`StatusCheckFailed_Instance`) | Problemas dentro de tu propia instancia | Red mal configurada, memoria agotada, SO colapsado |
+| **Sistema** (`StatusCheckFailed_System`) | Problemas del host físico de AWS | Fallo de hardware, energía o red del host |
+| **EBS adjunto** (`StatusCheckFailed_AttachedEBS`) | Accesibilidad y I/O de los volúmenes EBS | Volumen inaccesible o con I/O fallida |
+
+- Si falla la comprobación de **sistema**, AWS puede **migrar automáticamente** la instancia a otro servidor físico sin que tengas que reconstruir nada.
+- Si falla la de **instancia**, la acción es manual (detener/reiniciar tú mismo).
+- Se pueden crear alarmas de CloudWatch sobre estos resultados.
+
 ### CloudWatch Agent (demo práctica)
 Agente unificado que se instala **dentro** de la instancia para mandar métricas que CloudWatch no trae por defecto (RAM, uso de disco detallado) y logs de aplicación (Apache, etc.) a CloudWatch Logs.
 
