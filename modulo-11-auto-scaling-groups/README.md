@@ -67,7 +67,7 @@ aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names mi-asg
 ## Notas y gotchas
 
 - El health check que usa el ASG puede venir del propio EC2 o del Load Balancer — hay que saber cuál está activo, cambia qué cuenta como "instancia mala".
-- Para que el ASG reaccione rápido a picos de CPU, conviene monitorización detallada (1 min) — ver [[modulo-07-ec2-avanzado]].
+- Para que el ASG reaccione rápido a picos de CPU, conviene monitorización detallada (1 min) — ver [Módulo 07 — EC2 Avanzado](../modulo-07-ec2-avanzado/README.md).
 - Instance Refresh respeta siempre el % mínimo de salud — en ASGs pequeños (mín=1) puede no tener margen para sustituir sin bajar momentáneamente de esa capacidad mínima real.
 
 ## Recursos

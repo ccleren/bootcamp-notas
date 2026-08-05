@@ -52,7 +52,7 @@
 
 ### Agente unificado de CloudWatch
 - Se instala en la instancia (o on-prem) para mandar métricas/logs extra.
-- Requiere rol IAM; configuración centralizable vía SSM Parameter Store — ver [[modulo-08-aws-systems-manager]].
+- Requiere rol IAM; configuración centralizable vía SSM Parameter Store — ver [Módulo 08 — AWS Systems Manager](../modulo-08-aws-systems-manager/README.md).
 - Plugin `procstat`: monitoriza procesos concretos (CPU, memoria, hilos) por PID/exe/pattern.
 
 ### Health Checks — tema de examen

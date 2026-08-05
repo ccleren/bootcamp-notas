@@ -14,7 +14,7 @@
 | A favor | Todo desde una consola, menos piezas | Aísla el daño, permisos finos por cuenta, gasto claro por proyecto |
 | En contra | Un fallo/brecha afecta a todo | Más trabajo de configuración |
 
-Práctica del curso: crear cuenta `-PRODUCTION` (truco `+` de Gmail, ver [[modulo-02-infraestructura-global]]) con su propio MFA y presupuesto.
+Práctica del curso: crear cuenta `-PRODUCTION` (truco `+` de Gmail, ver [Módulo 02 — Infraestructura global](../modulo-02-infraestructura-global/README.md)) con su propio MFA y presupuesto.
 
 ### AWS Organizations
 - Servicio global: **cuenta de gestión** administra **cuentas miembro** (cada una solo pertenece a una organización).
@@ -70,7 +70,7 @@ aws organizations list-accounts
 
 - Examen: un SCP nunca otorga permiso, solo restringe.
 - La cuenta de gestión queda fuera del alcance de los SCP — MFA obligatorio, uso mínimo.
-- Diferencia con [[modulo-03-iam]]: IAM opera a nivel usuario/rol dentro de una cuenta; SCP opera a nivel cuenta/OU dentro de la organización — capas distintas, se combinan.
+- Diferencia con el [Módulo 03 — IAM](../modulo-03-iam/README.md): IAM opera a nivel usuario/rol dentro de una cuenta; SCP opera a nivel cuenta/OU dentro de la organización — capas distintas, se combinan.
 
 ## Recursos
 

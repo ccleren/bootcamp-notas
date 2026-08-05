@@ -40,7 +40,7 @@ IAM = servicio **global** que decide quién puede hacer qué dentro de tu cuenta
 | AWS SDK | Access Keys |
 
 - Access Keys = usuario+contraseña para máquinas/scripts. Nunca en código fuente, rotar periódicamente.
-- Dato curioso: el AWS CLI está construido sobre boto3 (SDK Python) — usado en [[modulo-07-ec2-avanzado]].
+- Dato curioso: el AWS CLI está construido sobre boto3 (SDK Python) — usado en el [Módulo 07 — EC2 Avanzado](../modulo-07-ec2-avanzado/README.md).
 
 ### Roles IAM
 - Identidad **temporal**, sin credenciales fijas (a diferencia de un usuario).

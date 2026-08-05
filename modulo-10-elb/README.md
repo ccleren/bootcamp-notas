@@ -108,7 +108,7 @@ aws elbv2 describe-target-health \
 - Examen: ALB = capa 7, NLB = capa 4, GWLB = capa 3.
 - Sticky sessions solo en ALB, no en NLB.
 - Cross-zone: gratis y activado por defecto en ALB; en NLB/GWLB hay que activarlo y se paga.
-- Ver [[modulo-06-ec2-basico]]: el SG de las instancias debería permitir tráfico solo desde el SG del balanceador, nunca abrirlo directo a internet.
+- Ver [Módulo 06 — EC2 Básico](../modulo-06-ec2-basico/README.md): el SG de las instancias debería permitir tráfico solo desde el SG del balanceador, nunca abrirlo directo a internet.
 
 ## Recursos
 

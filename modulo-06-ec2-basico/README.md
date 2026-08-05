@@ -48,7 +48,7 @@ ssh -i /ruta/clave.pem usuario@dns-publico-instancia
 | `Connection timed out` | SG no permite el 22 desde tu IP, NACL bloqueando, sin IP pública, falta ruta a internet, o CPU al 100% |
 
 ### Escalado vertical
-Subir el tamaño de la instancia — tiene techo. Más allá, toca escalado horizontal ([[modulo-11-auto-scaling-groups]]).
+Subir el tamaño de la instancia — tiene techo. Más allá, toca escalado horizontal ([Módulo 11 — Auto Scaling Groups](../modulo-11-auto-scaling-groups/README.md)).
 
 ### Opciones de compra
 | Opción | Resumen |
@@ -56,7 +56,7 @@ Subir el tamaño de la instancia — tiene techo. Más allá, toca escalado hori
 | Bajo demanda | Pago por uso, sin compromiso, al instante |
 | Planes de ahorro | Hasta ~70% descuento por compromiso $/hora, flexible entre familias |
 | Reservadas | Descuento 1-3 años; Estándar (rígida, más barata) vs Convertible (flexible) |
-| Spot | Hasta 90% descuento, AWS puede reclamarlas — ver [[modulo-07-ec2-avanzado]] |
+| Spot | Hasta 90% descuento, AWS puede reclamarlas — ver [Módulo 07 — EC2 Avanzado](../modulo-07-ec2-avanzado/README.md) |
 | Hosts dedicados | Servidor físico entero para ti, la más cara, para compliance |
 | Instancias dedicadas | Hardware no compartido, sin visibilidad de socket/núcleo |
 | Reservas de capacidad | Capacidad garantizada en una AZ, sin compromiso de uso |

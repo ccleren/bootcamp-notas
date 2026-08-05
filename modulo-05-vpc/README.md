@@ -52,7 +52,7 @@ aws ec2 describe-vpcs
 aws ec2 describe-subnets --filters "Name=vpc-id,Values=<vpc-id>"
 ```
 
-*(Security Groups, NACLs, Internet Gateway y NAT se ven en [[modulo-06-ec2-basico]] y módulos posteriores.)*
+*(Security Groups, NACLs, Internet Gateway y NAT se ven en el [Módulo 06 — EC2 Básico](../modulo-06-ec2-basico/README.md) y módulos posteriores.)*
 
 ## Notas y gotchas
 

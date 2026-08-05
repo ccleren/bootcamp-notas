@@ -62,7 +62,7 @@ aws ssm send-command --document-name "AWS-RunPatchBaseline" \
 ## Notas y gotchas
 
 - Requisito fácil de olvidar: sin el rol `AmazonSSMManagedInstanceCore`, el agente no se registra aunque esté instalado.
-- Conecta con [[modulo-03-iam]]: otro servicio más que necesita un rol asignado a la instancia, no credenciales de usuario.
+- Conecta con el [Módulo 03 — IAM](../modulo-03-iam/README.md): otro servicio más que necesita un rol asignado a la instancia, no credenciales de usuario.
 
 ## Recursos
 
