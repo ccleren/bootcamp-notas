@@ -27,7 +27,7 @@ Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/READM
 | 08 | AWS Systems Manager | ✅ Completo |
 | 09 | Almacenamiento de EC2 (AMI, EBS, Instance Store, EFS) | ✅ Completo |
 | 10 | Elastic Load Balancing (ELB) | ✅ Completo |
-| 11 | Auto Scaling Groups (ASG) | 🟡 Comandos genéricos — pendiente sustituir por los de tu demo real |
+| 11 | Auto Scaling Groups (ASG) | 🟡 En curso |
 
 Leyenda: 🟡 en curso · ✅ completo
 
