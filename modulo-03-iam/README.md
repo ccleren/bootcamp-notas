@@ -51,6 +51,10 @@ IAM = servicio **global** que decide quién puede hacer qué dentro de tu cuenta
 - **Informe de credenciales** (a nivel de cuenta): todos los usuarios, último uso, políticas, MFA activo o no.
 - **Access Advisor** (a nivel de usuario): qué servicios usa y cuándo por última vez — detecta permisos sobrantes.
 
+### Responsabilidad compartida aplicada a IAM
+- **AWS**: seguridad de la infraestructura/red global donde corre IAM, análisis de configuración y vulnerabilidades, conformidad normativa.
+- **Tú**: gestionar usuarios/grupos/roles/políticas, activar MFA en todas las cuentas, rotar Access Keys, revisar patrones de acceso.
+
 ## Comandos clave
 
 *(No hay CLI en las slides — práctica en consola: crear usuarios, grupos, políticas y roles.)*

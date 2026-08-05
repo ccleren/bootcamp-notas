@@ -29,6 +29,18 @@
 ### Cómo se paga en AWS
 Tres ejes: **cómputo** (tiempo usado), **almacenamiento** (GB guardados), **salida de datos** (la entrada es gratis).
 
+### Ventajas de moverse al Cloud
+- Cambia gasto de capital (CAPEX, comprar hardware) por gasto operativo (OPEX, pagar por uso) → reduce coste total de propiedad.
+- Economías de escala: te beneficias de la eficiencia de AWS operando a gran escala.
+- Gestión de capacidad automática: ajusta recursos según demanda real, sin sobre-aprovisionar "por si acaso".
+- Agilidad empresarial: lanzar algo nuevo pasa de semanas a minutos.
+- Eficiencia operativa: no gestionas centros de datos propios.
+- Presencia global: despliegas en varias regiones del mundo en minutos.
+
+### Panorama del mercado
+- AWS es el proveedor Cloud líder del mercado (informe Gartner 2023: reconocido como líder), con 200+ servicios y más de 1M de usuarios activos.
+- AWS Marketplace: catálogo de 7.000+ productos y software listos para usar.
+
 ### Modelo de responsabilidad compartida
 - **AWS** protege el Cloud: centros de datos, hardware, red global.
 - **Tú** proteges lo que hay dentro: IAM, cifrado, parches de tus instancias, diseño de red.
