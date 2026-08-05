@@ -19,9 +19,9 @@ Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/READM
 
 | Módulo | Tema | Estado |
 |---|---|---|
-| 07 | EC2 Avanzado (Spot, CloudWatch Agent) | 🟡 En repaso |
-| 09 | Almacenamiento — EFS | 🟡 En repaso |
-| 11 | Auto Scaling Groups (ASG) | 🟢 En curso |
+| 07 | EC2 Avanzado (Spot, CloudWatch Agent) | ✅ Completo |
+| 09 | Almacenamiento — EFS | ✅ Completo |
+| 11 | Auto Scaling Groups (ASG) | 🟡 Falta sección de comandos |
 
 Leyenda: 🟢 en curso · 🟡 con notas parciales · ✅ completo
 
