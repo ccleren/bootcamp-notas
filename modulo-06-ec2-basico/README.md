@@ -75,17 +75,17 @@ Gestionar instancias por CLI (alternativa a la consola):
 ```bash
 # Lanzar una instancia con User Data
 aws ec2 run-instances \
-  --image-id ami-xxxxxxxx --instance-type t2.micro \
-  --key-name mi-clave --security-group-ids sg-xxxxxxxx \
-  --subnet-id subnet-xxxxxxxx \
+  --image-id <ami-id> --instance-type t2.micro \
+  --key-name <key-pair-name> --security-group-ids <security-group-id> \
+  --subnet-id <subnet-id> \
   --user-data file://user-data.sh
 
 # Ver el estado de las instancias
 aws ec2 describe-instances --query "Reservations[].Instances[].[InstanceId,State.Name]"
 
 # Parar / terminar
-aws ec2 stop-instances --instance-ids i-xxxxxxxxxxxxxxxxx
-aws ec2 terminate-instances --instance-ids i-xxxxxxxxxxxxxxxxx
+aws ec2 stop-instances --instance-ids <instance-id>
+aws ec2 terminate-instances --instance-ids <instance-id>
 ```
 
 ## Notas y gotchas

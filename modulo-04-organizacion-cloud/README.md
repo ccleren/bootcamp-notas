@@ -52,7 +52,7 @@ aws organizations create-account \
 
 # Crear una Unidad Organizativa (OU) bajo la raíz
 aws organizations create-organizational-unit \
-  --parent-id r-xxxx --name "Produccion-OU"
+  --parent-id <root-id> --name "Produccion-OU"
 
 # Crear y aplicar un SCP
 aws organizations create-policy \
@@ -60,7 +60,7 @@ aws organizations create-policy \
   --description "Deniega el acceso a S3" \
   --content file://deny-s3.json
 aws organizations attach-policy \
-  --policy-id p-xxxxxxxx --target-id ou-xxxx-xxxxxxxx
+  --policy-id <policy-id> --target-id <ou-id>
 
 # Listar cuentas de la organización
 aws organizations list-accounts

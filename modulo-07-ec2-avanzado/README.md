@@ -85,7 +85,7 @@ aws ec2 request-spot-instances \
 aws ec2 describe-spot-instance-requests
 
 # Cancelar la solicitud (no termina las instancias ya lanzadas)
-aws ec2 cancel-spot-instance-requests --spot-instance-request-ids sir-xxxxxxxx
+aws ec2 cancel-spot-instance-requests --spot-instance-request-ids <spot-request-id>
 ```
 
 ### CloudWatch Agent (Amazon Linux 2)

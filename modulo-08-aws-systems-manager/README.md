@@ -41,7 +41,7 @@ JSON/YAML con pasos secuenciales y parámetros dinámicos, versionables. Usados 
 aws ssm describe-instance-information
 
 # Conectarte a una instancia sin SSH, vía Session Manager
-aws ssm start-session --target i-xxxxxxxxxxxxxxxxx
+aws ssm start-session --target <instance-id>
 
 # Ejecutar un comando remoto en varias instancias por tag
 aws ssm send-command \
@@ -51,11 +51,11 @@ aws ssm send-command \
 
 # Ver el resultado de un comando lanzado con Run Command
 aws ssm get-command-invocation \
-  --command-id <command-id> --instance-id i-xxxxxxxxxxxxxxxxx
+  --command-id <command-id> --instance-id <instance-id>
 
 # Aplicar parches manualmente a una instancia (Patch Manager)
 aws ssm send-command --document-name "AWS-RunPatchBaseline" \
-  --targets "Key=instanceIds,Values=i-xxxxxxxxxxxxxxxxx" \
+  --targets "Key=instanceIds,Values=<instance-id>" \
   --parameters "Operation=Install"
 ```
 

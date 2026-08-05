@@ -62,13 +62,13 @@ aws ec2 create-volume --volume-type gp3 --size 50 --availability-zone eu-west-1a
 
 # Adjuntarlo a una instancia
 aws ec2 attach-volume \
-  --volume-id vol-xxxxxxxx --instance-id i-xxxxxxxxxxxxxxxxx --device /dev/sdf
+  --volume-id <volume-id> --instance-id <instance-id> --device /dev/sdf
 
 # Crear un snapshot del volumen
-aws ec2 create-snapshot --volume-id vol-xxxxxxxx --description "backup manual"
+aws ec2 create-snapshot --volume-id <volume-id> --description "backup manual"
 
 # Aumentar tamaño/IOPS de un volumen existente (nunca reducir)
-aws ec2 modify-volume --volume-id vol-xxxxxxxx --size 100
+aws ec2 modify-volume --volume-id <volume-id> --size 100
 
 # Listar volúmenes y snapshots
 aws ec2 describe-volumes

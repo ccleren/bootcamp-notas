@@ -43,13 +43,13 @@ aws ec2 create-vpc --cidr-block 10.1.0.0/16
 
 # Crear una subred dentro de esa VPC, en una AZ concreta
 aws ec2 create-subnet \
-  --vpc-id vpc-xxxxxxxx \
+  --vpc-id <vpc-id> \
   --cidr-block 10.1.0.0/24 \
   --availability-zone eu-west-1a
 
 # Listar VPCs y subredes existentes
 aws ec2 describe-vpcs
-aws ec2 describe-subnets --filters "Name=vpc-id,Values=vpc-xxxxxxxx"
+aws ec2 describe-subnets --filters "Name=vpc-id,Values=<vpc-id>"
 ```
 
 *(Security Groups, NACLs, Internet Gateway y NAT se ven en [[modulo-06-ec2-basico]] y módulos posteriores.)*

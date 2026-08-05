@@ -44,7 +44,7 @@ aws autoscaling create-auto-scaling-group \
   --auto-scaling-group-name mi-asg \
   --launch-template LaunchTemplateName=mi-plantilla,Version='$Latest' \
   --min-size 1 --max-size 5 --desired-capacity 2 \
-  --vpc-zone-identifier "subnet-xxxx,subnet-yyyy" \
+  --vpc-zone-identifier "<subnet-id-a>,<subnet-id-b>" \
   --target-group-arns arn:aws:elasticloadbalancing:<region>:<account-id>:targetgroup/mi-target-group/<id>
 
 # Política de target tracking (ej. mantener CPU media al 40%)
