@@ -2,84 +2,77 @@
 
 ## Resumen
 
-### Escalabilidad, elasticidad y alta disponibilidad
-- **Escalabilidad**: capacidad de acomodar más carga — vertical (más hardware) u horizontal (más nodos).
-- **Elasticidad**: una vez el sistema es escalable, se autoescala según la carga real.
-- **Alta disponibilidad**: ejecutar la app en **al menos 2 AZ**, para sobrevivir a la pérdida de un centro de datos entero. El escalado horizontal necesita infraestructura extra: ASG + Load Balancer, ambos multi-AZ.
+### Escalabilidad, elasticidad y alta disponibilidad, sin mezclarlos
+Son tres conceptos que se suelen confundir: **escalabilidad** es la capacidad de aguantar más carga (subiendo el hardware de una máquina, o añadiendo más máquinas); **elasticidad** es que, una vez el sistema sabe escalar, lo haga automáticamente según la demanda real, sin que nadie tenga que intervenir a mano; y **alta disponibilidad** es un objetivo distinto — sobrevivir a que se caiga un centro de datos entero, lo cual solo se consigue repartiendo la aplicación en al menos dos Zonas de Disponibilidad. El escalado horizontal (más nodos) necesita piezas extra para funcionar de forma coordinada: un Auto Scaling Group y un Load Balancer, ambos desplegados en varias AZ.
 
-### ¿Qué es el Load Balancing?
-Servidor que reparte el tráfico entrante entre varias instancias EC2 (u otros destinos), dirigiendo tráfico solo a las que están sanas. Motivos para usarlo:
-- Distribuir carga entre varias instancias.
-- Exponer **un único punto de acceso** (DNS) de la app.
-- Tolerar fallos de instancias sin interrumpir el servicio.
-- Health checks periódicos.
-- Terminación SSL/HTTPS centralizada.
-- Alta disponibilidad entre zonas.
+### Para qué sirve un balanceador de carga
+Es, en esencia, la puerta de entrada única de tu aplicación: recibe el tráfico y lo reparte entre varias instancias backend, enviándolo solo a las que están respondiendo correctamente. Los motivos habituales para meter uno delante de tu app:
+- Repartir la carga entre varios servidores en vez de saturar uno solo.
+- Dar a los usuarios un único punto de acceso (una URL/DNS), aunque por debajo haya muchas instancias cambiando constantemente.
+- Poder perder una instancia sin que el servicio se caiga.
+- Vigilar continuamente qué instancias están sanas.
+- Centralizar el cifrado HTTPS en un solo sitio en vez de configurarlo en cada instancia.
+- Repartir tráfico entre varias zonas de disponibilidad.
 
-### ELB = Load Balancer gestionado por AWS
-AWS se encarga del funcionamiento, actualizaciones, mantenimiento y alta disponibilidad — tú solo configuras. Tipos:
+### El ELB es la versión gestionada por AWS
+No tienes que instalar ni mantener el software del balanceador — AWS se encarga de que funcione, de actualizarlo y de su propia alta disponibilidad. Hay tres tipos activos hoy (el cuarto, el Classic Load Balancer, se retiró en 2023):
 
-| Tipo | Capa OSI | Protocolo | Para qué |
+| Tipo | En qué capa de red opera | Protocolos | Cuándo usarlo |
 |---|---|---|---|
-| **Application LB (ALB)** | 7 | HTTP/HTTPS | Enrutamiento HTTP avanzado, microservicios, contenedores |
-| **Network LB (NLB)** | 4 | TCP/UDP | Alto rendimiento (millones de req/s), baja latencia (~100ms vs ~400ms del ALB), IP estática |
-| **Gateway LB (GWLB)** | 3 | GENEVE (puerto 6081) | Insertar firewalls/appliances de terceros en el flujo de tráfico de la VPC |
-| ~~Classic LB (CLB)~~ | 4 y 7 | — | Retirado en 2023 |
+| **Application LB (ALB)** | Capa 7 (aplicación) | HTTP/HTTPS | Enrutamiento inteligente basado en el contenido de la petición, microservicios, contenedores |
+| **Network LB (NLB)** | Capa 4 (transporte) | TCP/UDP | Cuando necesitas rendimiento extremo y la mínima latencia posible, con IP fija |
+| **Gateway LB (GWLB)** | Capa 3 (red) | GENEVE | Insertar dispositivos de seguridad de terceros en el camino del tráfico |
 
-### Application Load Balancer (ALB) — enrutamiento
-Puede dirigir tráfico según:
-- **Ruta de la URL** (`misitio.com/clientes` vs `/articulos`).
-- **Nombre de host / subdominio** (`ventas.misitio.com` vs `soporte.misitio.com`).
-- **Query string o cabeceras HTTP** (ej. `?categoria=libros`, o el `Platform` header para separar tráfico móvil/desktop).
-- Cada regla apunta a un **Target Group** distinto (ej. Target Group EC2 en AWS vs. Target Group on-premises).
+### Cómo decide el ALB a dónde mandar cada petición
+El ALB puede enrutar tráfico fijándose en distintas partes de la petición HTTP: la ruta de la URL (para separar, por ejemplo, `/clientes` de `/articulos`), el subdominio usado, o incluso parámetros de la query string o cabeceras concretas (como distinguir tráfico móvil de escritorio por una cabecera `Platform`). Cada una de esas reglas termina apuntando a un **Target Group** distinto, que puede vivir dentro de AWS o incluso fuera (on-premises).
 
-### Network Load Balancer (NLB) — Target Groups
-Puede apuntar a: instancias EC2, direcciones IP privadas, o incluso otro ALB. Health checks soportan TCP, HTTP y HTTPS. **No está en la capa gratuita.**
+### NLB: pensado para volumen y velocidad
+Sus Target Groups pueden apuntar a instancias EC2, direcciones IP privadas o incluso a otro ALB por detrás. Soporta health checks por TCP, HTTP o HTTPS. Es el único de los tres que no entra en la capa gratuita de AWS.
 
-### Gateway Load Balancer (GWLB)
-Redirige el tráfico transparentemente a dispositivos de seguridad de terceros (firewalls, IDS/IPS) sin tener que reconfigurar rutas de red — centraliza la inspección de tráfico.
+### GWLB: seguridad transparente
+Se coloca en medio del flujo de tráfico de tu VPC para que pase por dispositivos de terceros (firewalls, sistemas de detección de intrusos) sin que tengas que reconfigurar tus tablas de rutas cada vez — centraliza toda la inspección de tráfico en un solo punto.
 
-### Sticky Sessions (sesiones persistentes)
-- Solo en **ALB**. Redirige siempre al mismo cliente a la misma instancia backend, usando una cookie `AWSALB` (caduca a los 7 días).
-- ⚠️ Activarlo puede provocar **desequilibrio de carga** entre instancias.
+### Sticky sessions: cuando un usuario necesita volver siempre al mismo servidor
+Solo disponible en el ALB: usando una cookie propia (`AWSALB`, con caducidad de 7 días) el balanceador recuerda a qué instancia mandó a un cliente la primera vez, y lo sigue mandando ahí en peticiones sucesivas. Es útil si tu app guarda estado en memoria local, pero tiene una contrapartida: puede desequilibrar la carga entre instancias, porque unas pueden acabar acumulando más clientes "pegados" que otras.
 
-### Load Balancer de zona cruzada (cross-zone)
-Cada nodo del LB reparte tráfico entre **todas** las instancias registradas en **todas** las AZ (no solo las de su propia AZ).
+### Balanceo entre zonas (cross-zone)
+Por defecto, cada nodo del balanceador solo reparte tráfico entre las instancias de su propia AZ — activar el balanceo cruzado hace que reparta entre **todas** las instancias registradas, sin importar en qué AZ estén.
 
-| Tipo | Por defecto | Coste por cruzar AZ |
+| Tipo de balanceador | ¿Viene activado por defecto? | ¿Se paga el tráfico entre AZ? |
 |---|---|---|
-| ALB | Activado | Gratis |
-| NLB / GWLB | Desactivado | Se paga si lo activas |
-| CLB | Desactivado | Gratis |
+| ALB | Sí | No |
+| NLB / GWLB | No | Sí, si lo activas |
 
-### SSL/TLS y ACM
-- **SSL/TLS** cifra el tráfico en tránsito entre cliente y Load Balancer. TLS es la versión moderna (la gente sigue diciendo "SSL" por costumbre).
-- **AWS Certificate Manager (ACM)**: aprovisiona, gestiona y **renueva automáticamente** certificados TLS. Certificados públicos **gratis**. Se integra con ELB, API Gateway, CloudFront.
-- El Load Balancer usa un certificado X.509; puedes gestionar múltiples certificados/dominios en un mismo listener HTTPS con **SNI (Server Name Indication)** — el cliente indica el hostname en el handshake TLS para que el servidor sirva el certificado correcto. Solo funciona en ALB, NLB y CloudFront.
+### Cifrado en tránsito: SSL/TLS y ACM
+El tráfico entre el usuario y tu Load Balancer se puede cifrar con un certificado TLS (técnicamente TLS ha sustituido a SSL, pero el nombre "SSL" se sigue usando por costumbre). **AWS Certificate Manager (ACM)** se encarga de emitir, renovar y gestionar esos certificados automáticamente — los certificados públicos no tienen coste, y se integran directamente con ELB, API Gateway y CloudFront sin que tengas que subir nada a mano.
 
-### Health Checks
-| Estado del target | Significado |
+Si necesitas servir varios dominios distintos con certificados diferentes desde el mismo listener HTTPS, entra en juego **SNI (Server Name Indication)**: el propio cliente indica qué hostname quiere alcanzar durante el saludo inicial TLS, y el servidor le responde con el certificado correcto para ese dominio. Esto solo funciona en ALB, NLB y CloudFront.
+
+### Health Checks: cómo sabe el balanceador quién está sano
+Cada destino (target) pasa por distintos estados a lo largo de su vida:
+
+| Estado | Qué significa |
 |---|---|
-| `Initial` | Registrándose |
-| `Healthy` | Responde bien a los checks |
-| `Unhealthy` | Falló varios checks → no recibe tráfico |
-| `Unused` | No registrado en el grupo |
-| `Draining` | Se está retirando (deja de recibir tráfico gradualmente) |
-| `Unavailable` | No se están ejecutando checks |
+| `Initial` | Se está registrando todavía |
+| `Healthy` | Responde bien, recibe tráfico normal |
+| `Unhealthy` | Falló varios checks seguidos, deja de recibir tráfico |
+| `Unused` | No está registrado en ningún grupo |
+| `Draining` | Se está retirando progresivamente del grupo |
+| `Unavailable` | No se le están ejecutando checks |
 
-Parámetros por defecto: protocolo `HTTP`, puerto `80`, ruta `/`, timeout `5s`, intervalo `30s`, `HealthyThresholdCount=3`, `UnhealthyThresholdCount=5`, matcher código `200`.
+Los valores por defecto de un health check son: protocolo HTTP, puerto 80, ruta `/`, tiempo de espera de 5 segundos, comprobación cada 30 segundos, 3 respuestas correctas seguidas para pasar a sano y 5 fallos seguidos para pasar a no sano, esperando un código 200 como respuesta válida.
 
-⚠️ **Si todas las instancias están "unhealthy", el LB sigue enviándoles tráfico igualmente** (no tiene alternativa) — hay que actuar rápido para recuperarlas.
+Un detalle importante que conviene recordar: **si absolutamente todas las instancias detrás del balanceador están "unhealthy", el balanceador les sigue mandando tráfico igualmente**, porque no tiene ninguna instancia sana a la que redirigir en su lugar — no hay una opción de "cortar todo el tráfico" automáticamente, así que hay que reaccionar rápido para recuperar al menos una instancia.
 
-### Monitorización
-Métricas automáticas a CloudWatch (sin configurar nada): códigos HTTP 2XX-5XX, `HealthyHostCount`/`UnHealthyHostCount`, latencia, nº de solicitudes.
+### Qué se puede monitorizar
+CloudWatch recibe automáticamente, sin configuración adicional, métricas como los códigos de respuesta HTTP (2XX a 5XX), el número de hosts sanos/no sanos, la latencia y el volumen de peticiones.
 
-### Troubleshooting típico
-| Error | Causa / solución |
+### Errores comunes y cómo diagnosticarlos
+| Error | Qué suele indicar |
 |---|---|
-| **400 Bad Request** | Solicitud del cliente mal formada |
-| **503 Service Unavailable** | No hay instancias disponibles → revisa `HealthyHostCount`, asegúrate de tener instancias sanas en todas las AZ |
-| **504 Gateway Timeout** | La EC2 tardó demasiado en responder → revisa keep-alive y que el timeout del LB sea mayor que el del servidor |
+| **400 Bad Request** | La petición del cliente está mal formada, el problema viene de fuera |
+| **503 Service Unavailable** | No queda ninguna instancia disponible — revisa el número de hosts sanos y si tienes instancias funcionando en todas las AZ |
+| **504 Gateway Timeout** | La instancia backend tardó demasiado en responder — revisa la configuración de keep-alive y que el timeout del balanceador sea mayor que el del propio servidor |
 
 ## Comandos clave
 
@@ -87,10 +80,10 @@ Métricas automáticas a CloudWatch (sin configurar nada): códigos HTTP 2XX-5XX
 
 ## Notas y gotchas
 
-- ALB = capa 7 (HTTP), NLB = capa 4 (TCP/UDP), GWLB = capa 3 — clásico de examen, no confundir capas.
-- Sticky sessions solo existen en ALB, no en NLB.
-- Cross-zone load balancing: ALB lo trae gratis por defecto; en NLB/GWLB hay que activarlo explícitamente y **se paga** el tráfico entre AZ.
-- Recuerda: los Security Groups del Load Balancer y de las EC2 son capas separadas — ver [[modulo-06-ec2-basico]]. El SG de las instancias debe permitir tráfico **solo desde el SG del Load Balancer**, no desde internet directamente.
+- Las capas OSI de cada tipo de balanceador es materia clásica de examen: ALB = capa 7, NLB = capa 4, GWLB = capa 3.
+- Las sticky sessions solo existen en el ALB, no en el NLB.
+- El balanceo cruzado entre AZ viene gratis y activado por defecto en el ALB, pero en NLB/GWLB hay que activarlo a mano y tiene coste.
+- Conecta con [[modulo-06-ec2-basico]]: los Security Groups del balanceador y de las instancias EC2 son capas distintas — el SG de las instancias debería permitir tráfico únicamente desde el SG del balanceador, nunca abrirlo directamente a internet.
 
 ## Recursos
 

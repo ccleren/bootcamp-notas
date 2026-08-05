@@ -2,42 +2,48 @@
 
 ## Resumen
 
-### Problema que resuelve el Cloud
-Con infraestructura tradicional (centro de datos propio) hay que pagar alquiler, electricidad, refrigeración, mantenimiento; añadir/sustituir hardware lleva tiempo; el escalado es limitado; hay que tener equipo 24/7; y hay que planificar para catástrofes (terremoto, apagón...). El Cloud externaliza todo esto.
+### La idea central del Cloud, con mis palabras
+Antes de que existiera el Cloud, si querías montar una app tenías que comprar o alquilar servidores físicos, pagar el local, la luz, la refrigeración y a alguien que vigilara esas máquinas 24/7. Si tu tráfico se disparaba, no podías "añadir más servidor" en cinco minutos — había que comprar hardware, instalarlo, configurarlo. Y si tu única sala de servidores se quedaba sin luz o sufría una inundación, tu aplicación caía sin más.
 
-### ¿Qué es el Cloud Computing?
-Suministro **bajo demanda** de potencia de cálculo, almacenamiento, bases de datos y otros recursos IT, a través de una plataforma con **precio de pago por uso**. Provisionas el tipo y tamaño exacto que necesitas, casi al instante.
+El Cloud Computing resuelve justo eso: en vez de ser dueño del hardware, **alquilas capacidad de cómputo, almacenamiento y bases de datos bajo demanda** a un proveedor (AWS, Azure, GCP...) y pagas solo por lo que usas, casi como pagar la luz o el agua. Puedes pedir exactamente el tamaño que necesitas y tenerlo funcionando en minutos, no semanas.
 
-### Las 5 características del Cloud Computing
-1. **Autoservicio bajo demanda**: provisionas recursos sin interacción humana del proveedor.
-2. **Amplio acceso a la red**: accesible desde diversas plataformas cliente.
-3. **Alquiler múltiple / pooling de recursos** (multi-tenancy): varios clientes comparten la misma infraestructura física con seguridad y privacidad.
-4. **Rápida elasticidad**: se adquieren y liberan recursos automáticamente según demanda.
-5. **Servicio medido**: pagas exactamente por lo que usas.
+### Los cinco rasgos que definen "es Cloud de verdad"
+Un servicio no es realmente Cloud Computing solo por estar "en internet". Para que lo sea de verdad, suele cumplir estos cinco puntos (son la definición estándar del sector, no algo específico de AWS):
 
-### Modelos de despliegue
-- **Privado**: uso exclusivo de una organización, control total, para datos sensibles.
-- **Público**: recursos de un proveedor, accesibles vía internet a cualquiera.
-- **Híbrido**: parte on-premise + parte cloud.
+- **Puedes autoservirte**: pides un recurso (una VM, una base de datos...) y lo tienes sin que nadie del proveedor tenga que intervenir manualmente.
+- **Se accede por red desde cualquier sitio**: no importa si te conectas desde el portátil, el móvil o un servidor de otra empresa.
+- **Varios clientes comparten la misma infraestructura física** (multi-tenancy) sin verse entre ellos ni pisarse datos — el proveedor se encarga del aislamiento.
+- **Escala arriba y abajo casi al instante**: si tu app se vuelve viral hoy, en minutos tienes más capacidad; si baja el tráfico, la sueltas y dejas de pagarla.
+- **Pagas por medición real de uso**, no por una cuota fija — de ahí que en AWS el coste de una instancia parada sea (casi) cero.
 
-### Modelos de servicio (IaaS / PaaS / SaaS)
-| Modelo | Qué gestiona el proveedor | Ejemplo AWS | Otros |
+### Público, privado o híbrido
+- Cuando todos los recursos son de un único proveedor externo y accesibles por internet, hablamos de **Cloud público**.
+- Si una empresa levanta su propia infraestructura tipo-Cloud pero de uso exclusivo interno (por regulación, control total, datos muy sensibles), es **Cloud privado**.
+- El **Cloud híbrido** combina ambos: parte de la infraestructura se queda on-premise y parte se mueve al Cloud público.
+
+### Las tres capas de "cuánto gestiona el proveedor" (IaaS / PaaS / SaaS)
+Cuanto más alto subes en esta pirámide, menos cosas tienes que administrar tú mismo — pero también menos control tienes:
+
+| Capa | Qué te da el proveedor | Qué gestionas tú | Ejemplos |
 |---|---|---|---|
-| **IaaS** | Redes, servidores, almacenamiento — tú gestionas el resto | Amazon EC2 | Azure VMs, GCP, DigitalOcean |
-| **PaaS** | + runtime, gestión de hardware/software subyacente | AWS Elastic Beanstalk | Heroku, Azure App Service, Google App Engine |
-| **SaaS** | Todo — producto completo ya ejecutado y mantenido | Amazon QuickSight | Gmail, Dropbox, Zoom |
+| **IaaS** (infraestructura) | Red, servidores virtuales, almacenamiento en bruto | El sistema operativo, el runtime, la app | Amazon EC2, Azure VMs, DigitalOcean |
+| **PaaS** (plataforma) | Todo lo anterior + el runtime y el entorno de ejecución | Solo tu código y su configuración | AWS Elastic Beanstalk, Heroku, Google App Engine |
+| **SaaS** (software) | El producto entero, ya funcionando | Nada de infraestructura, solo lo usas | Gmail, Dropbox, Amazon QuickSight |
 
-### Modelo de precios de AWS
-Tres pilares de pago por uso: **computación** (tiempo de cómputo), **almacenamiento** (datos guardados) y **transferencia de datos saliente** (la entrada de datos es gratis).
+### Cómo se paga en AWS
+El modelo de facturación de AWS se apoya en tres ejes: lo que **computas** (tiempo de CPU/instancia), lo que **almacenas** (GB guardados) y lo que **sacas** de la red de AWS hacia fuera (la entrada de datos, en cambio, no se cobra). Este último punto sorprende a mucha gente al principio: subir datos a AWS es gratis, pero descargarlos puede tener coste.
 
-### Modelo de responsabilidad compartida
-- **AWS** es responsable de la seguridad **DEL** Cloud (infraestructura física, hardware, red global).
-- **Tú (cliente)** eres responsable de la seguridad **DENTRO** del Cloud (configuración de tus recursos, IAM, datos, cifrado, parches del SO en tus instancias).
+### Quién es responsable de qué (Shared Responsibility Model)
+Esto es clave y aparece constantemente en el resto del curso: AWS y tú os repartís la seguridad, pero en capas distintas.
+- **AWS protege el Cloud en sí**: los centros de datos, el hardware físico, la red global, la disponibilidad de los servicios base.
+- **Tú proteges lo que hay dentro del Cloud**: cómo configuras tus permisos de IAM, si cifras tus datos, si parcheas el sistema operativo de tus propias instancias, cómo diseñas tu red.
 
-### Introducción a DevOps y CI/CD
-- **DevOps**: metodología que integra desarrollo (Dev) y operaciones (Ops) para acelerar la entrega de software, con mejor colaboración, mayor confiabilidad y escalado más rápido.
-- **CI/CD**: enfoque automatizado de desarrollar, probar y desplegar software con frecuencia y de forma segura.
-- **Fases del pipeline CI/CD**: `PLAN → CODE → BUILD → TEST → RELEASE → DEPLOY → OPERATE → MONITOR`.
+Dicho de forma simple: a AWS no le puedes echar la culpa de una brecha de seguridad causada por un bucket S3 mal configurado por ti — eso cae dentro de tu parte de la responsabilidad.
+
+### DevOps y CI/CD, en corto
+**DevOps** no es una herramienta sino una forma de trabajar: juntar al equipo que desarrolla (Dev) con el que opera en producción (Ops) para que los cambios lleguen más rápido y con menos fricción, en vez de tirar el código "por encima del muro" de un equipo a otro.
+
+Esa forma de trabajar se apoya en **CI/CD** (integración y despliegue continuos): automatizar todo el camino desde que escribes código hasta que está sirviendo tráfico real, para poder liberar cambios con frecuencia sin que cada release sea un drama. El recorrido típico de un cambio pasa por: planificar → escribir el código → compilarlo/construirlo → probarlo → prepararlo para lanzar → desplegarlo → mantenerlo funcionando → vigilar que todo va bien.
 
 ## Comandos clave
 
@@ -45,8 +51,8 @@ Tres pilares de pago por uso: **computación** (tiempo de cómputo), **almacenam
 
 ## Notas y gotchas
 
-- AWS es el proveedor líder del mercado (Gartner Magic Quadrant), con 200+ servicios y más de 1M de usuarios activos.
-- El **modelo de responsabilidad compartida** es un tema recurrente en el resto del curso (y típico de examen): recuerda siempre separar "seguridad DEL cloud" (AWS) vs "seguridad EN el cloud" (tú).
+- El modelo de responsabilidad compartida es la base de casi todo lo que viene después en IAM, VPC y seguridad — cuando dudes "¿esto lo arregla AWS o yo?", vuelve a este esquema.
+- No caigas en pensar que "estar en el Cloud" ya te hace seguro por defecto: la parte "dentro del Cloud" sigue siendo tuya.
 
 ## Recursos
 

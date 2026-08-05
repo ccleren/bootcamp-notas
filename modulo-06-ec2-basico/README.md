@@ -2,72 +2,63 @@
 
 ## Resumen
 
-**EC2 (Elastic Compute Cloud)** = IaaS, uno de los servicios más populares de AWS. Es la forma de "alquilar" servidores virtuales en el Cloud.
+**EC2 (Elastic Compute Cloud)** es el servicio de AWS para "alquilar" servidores virtuales — la pieza IaaS más usada de todo el catálogo. Es el punto de partida para entender casi todo lo demás en AWS, porque muchos otros servicios acaban desplegándose sobre EC2 por debajo.
 
-### Datos de usuario (User Data) / bootstrapping
-- Script que se ejecuta **una sola vez**, en el **primer arranque** de la instancia, como usuario `root`.
-- Sirve para automatizar: instalar actualizaciones, instalar software, descargar archivos, etc.
-- Ejemplo clásico (levantar un servidor Apache "Hola Mundo"):
-  ```bash
-  #!/bin/bash
-  yum update -y
-  yum install -y httpd
-  systemctl start httpd
-  systemctl enable httpd
-  echo "<h1>Hola Mundo desde $(hostname -f)</h1>" > /var/www/html/index.html
-  ```
+### User Data: automatizar el primer arranque
+Al lanzar una instancia puedes pasarle un script que se ejecuta automáticamente, como usuario `root`, **solo en el primer arranque**. Es la forma estándar de dejar la máquina lista sin tener que conectarte manualmente después: instalar paquetes, actualizar el sistema, descargar configuración, etc. Un ejemplo mínimo para levantar un Apache de prueba nada más arrancar:
+```bash
+#!/bin/bash
+yum update -y
+yum install -y httpd
+systemctl start httpd
+systemctl enable httpd
+echo "<h1>Hola Mundo desde $(hostname -f)</h1>" > /var/www/html/index.html
+```
 
-### Tipos de instancias EC2
-| Familia | Para qué | Casos de uso |
+### Elegir el tipo de instancia correcto
+| Familia | Está pensada para | Ejemplos de uso |
 |---|---|---|
-| Uso general | Balance cómputo/memoria/red | Apps web, backend, BBDD |
-| Optimizada a computación | Alto rendimiento de CPU | Batch, análisis científico, servidores web de alto tráfico |
-| Optimizada a memoria | Más RAM por CPU | BBDD en memoria, apps con datasets grandes |
-| Optimizada a almacenamiento | Acceso rápido a datos en disco | NoSQL, sistemas de archivos distribuidos, I/O intensiva |
-| Computación acelerada | GPU/hardware especializado | Entrenamiento de IA/ML |
-| Optimizada a HPC | Procesamiento paralelo, comunicación rápida entre nodos | Simulaciones científicas |
+| Uso general | Un equilibrio entre CPU, memoria y red | Apps web típicas, backends, bases de datos pequeñas |
+| Optimizada a computación | CPU potente por encima de todo | Procesos batch, cálculo científico, servidores con mucho tráfico |
+| Optimizada a memoria | Mucha RAM en proporción a la CPU | Bases de datos en memoria, datasets grandes |
+| Optimizada a almacenamiento | Lectura/escritura rápida en disco | NoSQL, sistemas de archivos distribuidos |
+| Computación acelerada | GPU u otro hardware especializado | Entrenamiento de IA/ML |
+| Optimizada a HPC | Procesamiento paralelo entre muchos nodos | Simulaciones científicas a gran escala |
 
-### Grupos de seguridad (Security Groups)
-- **Firewall virtual** de la instancia EC2 ("el guardia de seguridad de la puerta").
-- Solo contienen reglas de **permiso** (no hay reglas "deny" explícitas).
-- Las reglas pueden referenciar por **IP** o por **otro grupo de seguridad**.
-- Regulan: puertos, rangos de IP (IPv4/IPv6), tráfico de entrada y de salida por separado.
-- Por defecto: **todo el tráfico de entrada bloqueado**, **todo el tráfico de salida permitido**.
-- Se puede adjuntar a **varias** instancias a la vez. Buena práctica: un SG dedicado solo para SSH.
-- Diagnóstico rápido: timeout de conexión → problema de Security Group; "connection refused" → problema de la propia aplicación (no arrancó bien).
+### Grupos de seguridad
+Cada instancia EC2 lleva asociado uno o varios **Security Groups**, que funcionan como un firewall a nivel de instancia. Una particularidad importante: **solo existen reglas de permiso**, no hay forma de "denegar" explícitamente algo dentro de un SG — todo lo que no está permitido, queda bloqueado por omisión. Puedes definir reglas separadas para tráfico entrante y saliente, referenciando tanto rangos de IP como otro Security Group. Por defecto, una instancia recién creada bloquea toda entrada y permite toda salida.
 
-### Conexión SSH
+Un mismo Security Group se puede reutilizar en varias instancias a la vez — de hecho es buena práctica tener uno dedicado solo a SSH en vez de mezclarlo con las reglas de la aplicación. Para diagnosticar problemas de conexión rápido: si la conexión hace timeout, sospecha primero del Security Group; si en cambio da "connection refused", el problema suele estar en que la aplicación no llegó a arrancar bien dentro de la instancia.
+
+### Conectarte por SSH
 ```bash
 ssh -i /ruta/clave.pem usuario@dns-publico-instancia
 ```
-- Puerto 22 por defecto. Windows < 10 necesita Putty; Windows ≥ 10, macOS y Linux usan SSH nativo.
-- **EC2 Instance Connect**: alternativa más segura — usa una clave pública SSH temporal (expira en 60s) inyectada por AWS vía su API, en vez de mantener el puerto 22 abierto a IPs fijas.
+El puerto por defecto es el 22. En Windows 10 o superior, macOS y Linux funciona el cliente SSH nativo; en versiones antiguas de Windows hace falta una herramienta como Putty. Como alternativa más segura existe **EC2 Instance Connect**, que evita mantener el puerto 22 permanentemente abierto: AWS inyecta una clave pública temporal (válida solo 60 segundos) a través de su propia API en el momento de conectarte.
 
-### Errores SSH comunes
-| Error | Solución |
+### Errores típicos al conectar por SSH
+| Error | Qué lo suele causar |
 |---|---|
-| `Unprotected private key file` | Permisos del `.pem` muy abiertos → `chmod 400 clave.pem` |
-| `Permission denied` / `Host key not found` | Usuario incorrecto (ej. `ec2-user` en vez de `ubuntu`, depende del SO de la AMI) |
-| `Connection timed out` | Revisar: SG permite puerto 22 desde tu IP, el NACL no bloquea el tráfico, la instancia tiene IP pública, hay ruta a Internet (IGW) en la tabla de rutas, la instancia no está sobrecargada (CPU al 100%) |
+| `Unprotected private key file` | El archivo `.pem` tiene permisos demasiado abiertos → arreglar con `chmod 400 clave.pem` |
+| `Permission denied` / `Host key not found` | Usuario incorrecto para el SO de la AMI (ej. usar `ubuntu` cuando debía ser `ec2-user`) |
+| `Connection timed out` | Puede ser varias cosas a la vez: el Security Group no deja pasar el puerto 22 desde tu IP, un NACL está bloqueando el tráfico, la instancia no tiene IP pública, falta una ruta a internet en la tabla de rutas, o la instancia está saturada de CPU |
 
-### Escalado vertical
-- Aumentar el tamaño de la instancia (ej. de `t2.nano` 0.5GB RAM/1 vCPU a `u-12tb1.metal` 12.3TB RAM/448 vCPUs).
-- Tiene límites — para más capacidad allá de cierto punto, toca escalado horizontal (ver [[modulo-11-auto-scaling-groups]]).
+### Cuando el tamaño de la instancia se queda corto
+Subir de tamaño una instancia (por ejemplo de una `t2.nano` con 0.5GB de RAM a algo con varios TB de RAM) es escalado vertical, y tiene un techo — llega un punto en el que hace falta repartir la carga entre varias instancias en paralelo (escalado horizontal), tema que se cubre en [[modulo-11-auto-scaling-groups]].
 
-### Opciones de compra de EC2
-| Opción | Resumen |
+### Formas de pagar una instancia EC2
+| Opción | En qué consiste |
 |---|---|
-| **Bajo demanda** | Pago por uso, sin compromiso, disponible al instante — para cargas cortas/impredecibles |
-| **Planes de ahorro** (1-3 años) | Hasta 72% descuento por compromiso de uso ($/hora), flexible entre familias de instancia y SO |
-| **Instancias reservadas** | Descuento por reservar 1-3 años; **Estándar** (más barata, pero no puedes cambiar familia/SO) vs **Convertible** (permite cambiar familia/SO/tenencia, y beneficiarte de bajadas de precio) |
-| **Instancias Spot** | Hasta 90% descuento, pero AWS puede reclamarlas — ver [[modulo-07-ec2-avanzado]] |
-| **Hosts dedicados** | Servidor físico dedicado a ti, facturación por host — la opción más cara, para compliance |
-| **Instancias dedicadas** | Hardware dedicado pero facturación por instancia, sin visibilidad de sockets/núcleos |
-| **Reservas de capacidad** | Reserva capacidad garantizada en una AZ concreta, sin compromiso de permanencia |
+| **Bajo demanda** | Pagas por hora/segundo de uso, sin compromiso, disponible al instante |
+| **Planes de ahorro** | Descuento considerable (hasta ~70%) a cambio de comprometerte a un gasto/hora durante 1-3 años, con flexibilidad para cambiar de familia de instancia |
+| **Instancias reservadas** | Descuento por reservar 1-3 años de uso; la variante **Estándar** es más barata pero rígida, la **Convertible** permite cambiar de familia/SO a cambio de menos descuento |
+| **Instancias Spot** | El mayor descuento posible (hasta 90%), a cambio de que AWS pueda recuperarlas cuando las necesite — detalle en [[modulo-07-ec2-avanzado]] |
+| **Hosts dedicados** | Servidor físico entero solo para ti, la opción más cara, pensada para requisitos de cumplimiento normativo |
+| **Instancias dedicadas** | Hardware no compartido con otras cuentas, pero sin la visibilidad a nivel de socket/núcleo que sí da un host dedicado |
+| **Reservas de capacidad** | Garantiza que tendrás capacidad disponible en una AZ concreta, sin comprometerte a usarla todo el tiempo |
 
-### Coste de IPv4 pública (importante, cambio reciente de AWS)
-- Desde el **1 feb 2024**, AWS cobra por **cada IPv4 pública**: ~$0.005/hora (~$3.6/mes), incluso en EC2/RDS/ELB. Antes era gratis mientras la instancia estuviera activa.
-- La capa gratuita de 750h/mes de EC2 no cubre esto — es un cargo aparte por la IP en sí.
+### El cargo por IPv4 pública (cambio reciente que conviene tener presente)
+Desde febrero de 2024, AWS cobra por cada dirección IPv4 pública que tengas asignada (a una EC2, RDS, un Load Balancer...), independientemente de si esa capa gratuita de cómputo te cubre la instancia en sí. Antes de ese cambio, la IP pública no tenía coste propio mientras la instancia estuviera encendida — ahora sí, y es un cargo aparte del de la propia instancia.
 
 ## Comandos clave
 
@@ -81,9 +72,9 @@ chmod 400 nombre-del-archivo.pem
 
 ## Notas y gotchas
 
-- El **User Data solo corre una vez** (primer boot) — si necesitas ejecutar algo en cada arranque, no sirve User Data tal cual, hace falta otra estrategia (ej. script gestionado por systemd).
-- El **cargo por IPv4 pública desde 2024** cambia el cálculo de coste de muchas arquitecturas — antes "gratis mientras esté encendida", ahora tiene coste por hora igual que la propia instancia.
-- Diferencia clave a examen: **Security Group** = a nivel de instancia, solo reglas Allow, stateful. **NACL** = a nivel de subred, permite Allow y Deny, stateless (se ve en detalle en módulos de VPC más avanzados).
+- El User Data solo se ejecuta en el **primer arranque** — si necesitas que algo corra en cada reinicio, hace falta otra estrategia (por ejemplo, un servicio gestionado por systemd), no vale confiar en que el script se repita solo.
+- El nuevo cargo por IPv4 pública cambia los números de coste de arquitecturas que antes se consideraban "gratis mientras estuvieran encendidas".
+- Diferencia clásica de examen: un **Security Group** actúa a nivel de instancia, solo tiene reglas de permitir, y es *stateful* (si dejas entrar el tráfico, la respuesta sale sola). Un **NACL** actúa a nivel de subred, admite tanto permitir como denegar, y es *stateless* — se detalla más en módulos de VPC avanzados.
 
 ## Recursos
 

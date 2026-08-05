@@ -2,49 +2,39 @@
 
 ## Resumen
 
-### Fundamentos de cuenta AWS
-- El **usuario raíz** de una cuenta tiene control total y **no puede ser restringido**.
-- Una cuenta AWS es un **contenedor de identidades y recursos**: por defecto, todo acceso está denegado excepto para el usuario raíz.
-- Los recursos se facturan al método de pago de esa cuenta específica.
-- Usar **cuentas separadas** (DEV, TEST, PROD) contiene el impacto de errores administrativos o de actores maliciosos — si algo falla o se compromete en DEV, no afecta a PROD.
+### Por qué una sola cuenta AWS no siempre es suficiente
+El usuario root de una cuenta AWS tiene poder absoluto sobre ella y no hay forma de limitarlo — por diseño. Y por defecto, dentro de una cuenta nueva todo está bloqueado salvo para ese root. El problema aparece cuando metes en la misma cuenta tu entorno de pruebas, el de desarrollo y el de producción: un error humano o una credencial filtrada en "pruebas" puede acabar afectando a producción, porque técnicamente comparten el mismo espacio. Separar en cuentas distintas por entorno (dev, test, prod) actúa como un cortafuegos: lo que se rompe en una no se propaga a las demás.
 
-### Single Account vs. Multi Account
-| | Single Account | Multi Account |
+### ¿Una cuenta para todo, o varias?
+| | Una sola cuenta | Varias cuentas |
 |---|---|---|
-| Ventaja | Todo desde una consola, menos complejidad | Aísla recursos, reduce superficie de ataque, permisos granulares por cuenta, tracking de gastos por cuenta/proyecto |
-| Desventaja | Un compromiso/error afecta a **todo** | Más esfuerzo de configuración/mantenimiento |
+| A favor | Todo desde una única consola, menos piezas que mantener | Aísla el daño de un fallo/ataque, permisos más finos por cuenta, más fácil ver cuánto gasta cada proyecto |
+| En contra | Un error o brecha puede afectar a todo lo que hay dentro | Más trabajo de configuración y mantenimiento |
 
-Práctica del curso: crear una segunda cuenta `-PRODUCTION` (usando el truco del `+` de Gmail — ver [[modulo-02-infraestructura-global]]), con su propio MFA en el root y su propio presupuesto.
+Como ejercicio práctico del curso, se monta una segunda cuenta dedicada a producción (reutilizando el truco del alias `+` de Gmail — ver [[modulo-02-infraestructura-global]]), con su propio MFA en el root y su propio presupuesto, separada de la cuenta general.
 
-### AWS Organizations
-Servicio **global** para administrar varias cuentas de AWS desde una **cuenta de gestión** (management account); el resto son **cuentas miembro** (una cuenta miembro solo puede pertenecer a una organización).
+### AWS Organizations: gestionar varias cuentas desde un único sitio
+Es el servicio (global) que permite tener una **cuenta de gestión** desde la que administras todas las demás, llamadas **cuentas miembro** — cada cuenta miembro solo puede pertenecer a una organización a la vez. Las cuentas se agrupan en **Unidades Organizativas (OU)**, que a su vez se pueden anidar (por ejemplo, una OU raíz con una sub-OU de Desarrollo y otra de Producción, y dentro de cada una las cuentas reales).
 
-Beneficios:
-- **Facturación consolidada**: un único método de pago para todas las cuentas.
-- **Descuentos por volumen agregado** (EC2, S3...) y **instancias reservadas compartidas** entre cuentas.
-- API para automatizar la creación de cuentas.
+¿Qué ganas al centralizar así?
+- Un único método de pago y **una sola factura** para toda la organización.
+- Los descuentos por volumen de uso (en EC2, S3...) y las instancias reservadas se comparten entre todas las cuentas — como si sumaran su consumo.
+- Puedes automatizar la creación de cuentas nuevas vía API en vez de hacerlo a mano cada vez.
 
-**Entidades**: Cuenta de gestión → Unidades Organizativas (OU, se pueden anidar) → Cuentas miembro. Ej: OU raíz > OU (Dev) / OU (Prod) > cuentas individuales.
+### Service Control Policies (SCP): el techo por encima de IAM
+Un SCP es una política que se aplica a nivel de OU o de cuenta y **limita** lo que pueden hacer los usuarios/roles de esa cuenta, sin importar qué permisos les haya dado IAM por dentro. Es clave entender que un SCP nunca concede permisos — solo puede quitar. Para que una acción se ejecute realmente, tiene que estar permitida **a la vez** por la política de IAM del usuario **y** por el SCP heredado desde la jerarquía de OUs por la que pasa esa cuenta (los `Deny` se van acumulando cuanto más abajo estés en el árbol de OUs).
 
-### Service Control Policies (SCP)
-- Políticas que **limitan** qué pueden hacer las cuentas miembro de una OU, incluso si el usuario tiene permiso a nivel de IAM dentro de esa cuenta.
-- **No aplican a la cuenta de gestión** (root de la organización — esa puede hacer cualquier cosa).
-- Son **jerárquicas**: los `Deny` se heredan y acumulan en cascada por cada nivel de OU por el que pasa la cuenta.
-- Una acción solo está permitida si **tanto** la política de IAM **como** el SCP la permiten (son un techo, no sustituyen a IAM).
-- Ejemplos de SCP: `FullAWSAccess` (`Allow *`), `DenyS3` (`Deny s3:*`), `AllowS3EC2` (`Allow` solo `s3:*` y `ec2:*`).
+Un detalle importante: **la cuenta de gestión de la organización no está sujeta a ningún SCP** — puede hacer lo que quiera. Justo por eso conviene protegerla especialmente bien y usarla lo mínimo posible para operaciones del día a día.
 
-### IAM Identity Center (antes AWS SSO)
-- Login **único** (SSO) para acceder a múltiples cuentas de AWS y aplicaciones externas.
-- Se integra con: almacén de identidad interno de AWS, Microsoft AD gestionado, AD on-premise, proveedores SAML 2.0.
-- Es la solución de identidad **recomendada por AWS** para gestionar SSO y permisos a través de cuentas — evita crear un usuario IAM por cada cuenta.
+### IAM Identity Center (el SSO de AWS)
+Antes se llamaba AWS SSO. Permite iniciar sesión **una sola vez** y desde ahí acceder a varias cuentas de AWS (y hasta aplicaciones externas), sin tener que crear un usuario IAM distinto en cada cuenta. Puede conectarse con el propio directorio de identidades de AWS, con Active Directory (gestionado o on-premise), o con cualquier proveedor SAML 2.0. Es, de hecho, la vía que AWS recomienda para gestionar identidad en entornos multi-cuenta.
 
-### AWS Control Tower
-- Automatiza la configuración y gobernanza de entornos **multi-cuenta grandes**, orquestando Organizations + IAM Identity Center + CloudFormation + Config.
-- Componentes clave:
-  - **Landing Zone**: entorno base para manejar múltiples cuentas.
-  - **Guard Rails**: detectan malas configuraciones y hacen cumplir políticas de seguridad.
-  - **Account Factory**: automatiza la creación de cuentas nuevas con configuración estándar ya aplicada.
-  - **Dashboard**: vista y gestión centralizada de todo el entorno.
+### AWS Control Tower: automatizar todo lo anterior a gran escala
+Cuando el número de cuentas crece mucho, montar y mantener todo esto a mano se vuelve inviable — Control Tower orquesta Organizations, IAM Identity Center, CloudFormation y Config para automatizarlo, apoyándose en cuatro piezas:
+- **Landing Zone**: el entorno base ya preparado para alojar múltiples cuentas.
+- **Guard Rails**: reglas que detectan (o directamente impiden) configuraciones que rompen tus políticas de seguridad.
+- **Account Factory**: crea cuentas nuevas ya con la configuración estándar aplicada, sin trabajo manual.
+- **Dashboard**: panel único para ver y gestionar todo el entorno multi-cuenta.
 
 ## Comandos clave
 
@@ -52,9 +42,9 @@ Beneficios:
 
 ## Notas y gotchas
 
-- Un SCP **nunca da permisos por sí solo**, solo los **restringe**: el permiso final es la intersección entre lo que permite IAM y lo que permite el SCP en cascada. Muy típico de examen.
-- La cuenta de gestión de una organización queda **fuera del alcance de los SCP** — con gran poder, gran responsabilidad: protégela especialmente bien (MFA, uso mínimo).
-- Ver [[modulo-03-iam]] para la diferencia entre políticas de IAM (a nivel de usuario/rol) y SCP (a nivel de cuenta/OU dentro de la organización) — son capas distintas y complementarias.
+- Idea que conviene tener clara para exámenes: un SCP nunca otorga permiso, solo restringe — el permiso final siempre es la intersección entre lo que deja pasar IAM y lo que deja pasar el SCP.
+- La cuenta de gestión queda fuera del alcance de los SCP, así que merece un cuidado extra (MFA obligatorio, uso mínimo posible).
+- La diferencia con [[modulo-03-iam]]: IAM opera a nivel de usuario/rol dentro de una cuenta; los SCP operan a nivel de cuenta/OU dentro de una organización — son capas distintas que se combinan, no se sustituyen.
 
 ## Recursos
 

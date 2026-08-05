@@ -2,77 +2,67 @@
 
 ## Resumen
 
-**IAM** es el servicio (global, no regional) que controla de forma centralizada quién puede acceder a qué recursos de AWS. "Llaves digitales" para personas y servicios.
+**IAM** es el servicio (global, no atado a una región) que decide quién puede hacer qué dentro de tu cuenta de AWS. Es el equivalente al departamento de recursos humanos + seguridad de un edificio: da de alta a la gente, les asigna una tarjeta de acceso y define a qué plantas puede entrar cada una.
 
 ### Usuarios y grupos
-- La cuenta **root** se crea por defecto y **no debe usarse ni compartirse** para el día a día.
-- Los **usuarios** son personas, pueden tener permisos individuales o heredados de un grupo.
-- Los **grupos** solo contienen usuarios (no otros grupos). Un usuario puede pertenecer a varios grupos, o a ninguno.
-- Buena práctica: un usuario "físico" = un usuario de AWS (no compartir cuentas).
+- Toda cuenta AWS nace con un usuario **root**, con poderes totales — la norma no escrita es no tocarlo salvo para la configuración inicial y dejarlo guardado bajo llave (con MFA).
+- Cada persona real que necesita acceso debería tener su **propio usuario IAM** — nunca compartir credenciales entre varias personas.
+- Los usuarios se pueden agrupar (un grupo solo contiene usuarios, no otros grupos anidados), y un mismo usuario puede estar en varios grupos a la vez o en ninguno. Gestionar permisos por grupo es mucho más manejable que ir usuario por usuario.
 
-### Políticas (Policies)
-- Documentos **JSON** que definen permisos, adjuntados a usuarios, grupos o roles.
-- Principio de **mínimo privilegio**: si una acción no está explícitamente permitida, se considera prohibida.
-- Estructura de una política:
-  ```json
-  {
-    "Version": "2012-10-17",
-    "Id": "PolicyID12345",
-    "Statement": [
-      {
-        "Sid": "1",
-        "Effect": "Allow",
-        "Principal": { "AWS": ["arn:aws:iam::123456789012:user/MyUser"] },
-        "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
-        "Resource": ["arn:aws:s3:::mybucket/*", "arn:aws:s3:::mybucket2/*"]
-      }
-    ]
-  }
-  ```
-  - `Version`: siempre `"2012-10-17"`.
-  - `Statement`: obligatorio, una o más reglas.
-  - Cada `Statement`: `Sid` (opcional), `Effect` (`Allow`/`Deny`), `Principal` (a quién aplica), `Action` (qué acciones), `Resource` (sobre qué recursos), `Condition` (opcional).
-- **Políticas heredadas** (vía grupo, cambias en un sitio y afecta a todos) vs **políticas en línea** (adjuntas directamente a un usuario/recurso concreto, para casos personalizados).
+### Políticas: el "qué puede hacer cada uno"
+Los permisos se definen en documentos **JSON** llamados políticas, que se cuelgan de un usuario, un grupo o un rol. La regla de oro es el **mínimo privilegio**: si una acción no aparece explícitamente permitida, AWS la trata como prohibida por defecto — no hace falta "denegar" todo lo demás.
 
-### Seguridad de acceso
-- **Política de contraseñas**: longitud mínima, tipos de caracteres, caducidad, evitar reutilización, permitir auto-cambio.
-- **MFA (Multi-Factor Authentication)**: combina algo que sabes (contraseña) + algo que tienes (dispositivo) o algo que eres (biometría). Protege aunque roben la contraseña.
-  - Opciones: app virtual MFA (Google Authenticator, Authy), clave de seguridad U2F (YubiKey), dispositivo MFA hardware.
+Una política tiene esta forma general:
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject"],
+      "Resource": "arn:aws:s3:::mi-bucket/*"
+    }
+  ]
+}
+```
+Cada bloque `Statement` responde a tres preguntas: **¿permito o deniego? (`Effect`), ¿qué acción? (`Action`), ¿sobre qué recurso? (`Resource`)** — opcionalmente puedes acotar además a quién aplica (`Principal`) y bajo qué condiciones (`Condition`).
 
-### Formas de acceder a AWS
-| Método | Se protege con |
+Hay dos formas de aplicar una política: **adjuntarla a un grupo** (la hereda automáticamente todo el que entra en ese grupo, y si la cambias, cambia para todos a la vez) o pegarla directamente a un usuario/recurso concreto como **política en línea**, para casos muy puntuales que no quieres que se propaguen.
+
+### Reforzar el acceso: contraseñas y MFA
+Puedes exigir una política de contraseñas (longitud mínima, mezcla de caracteres, caducidad, no repetir contraseñas anteriores), pero el salto de seguridad real viene de la **autenticación multifactor (MFA)**: además de la contraseña, pides un segundo factor (un código generado en el móvil, una llave física tipo YubiKey, o un token hardware). Así, aunque roben la contraseña, no pueden entrar sin ese segundo elemento.
+
+### Tres puertas de entrada a AWS
+| Vía | Se autentica con |
 |---|---|
-| Consola de administración | Contraseña + MFA |
-| AWS CLI | Access Keys (Access Key ID + Secret Access Key) |
-| AWS SDK | Access Keys, para acceso programático desde código |
+| Consola web | Usuario/contraseña + MFA |
+| AWS CLI | Access Keys (par de claves: ID + secreta) |
+| AWS SDK (código) | Access Keys también |
 
-- Las **Access Keys** son como usuario+contraseña para programas: nunca se comparten ni se guardan en código fuente, se rotan periódicamente.
-- El AWS CLI está construido, de hecho, sobre el AWS SDK para Python (**boto3**) — ver [[modulo-07-ec2-avanzado]] donde se usa boto3 directamente.
+Las Access Keys funcionan como un usuario y contraseña pensados para máquinas/scripts en vez de personas — por eso nunca deben quedar escritas en el código fuente ni compartirse, y conviene rotarlas de vez en cuando. Un dato curioso: el propio AWS CLI, por debajo, está construido sobre el SDK de Python (**boto3**) — el mismo que se usa en el script de ETL del [[modulo-07-ec2-avanzado]].
 
-### Roles IAM
-- **Identidades temporales** que otorgan permisos sin credenciales permanentes (a diferencia de un usuario IAM, que es acceso permanente).
-- Usos típicos: acceso entre cuentas AWS, integración con identidades externas (federación), y sobre todo **dar permisos a servicios de AWS** (ej. una instancia EC2 que necesita leer de S3).
-- Funcionamiento: la **política de confianza** (trust policy) define quién puede asumir el rol; la **política de permisos** define qué puede hacer una vez asumido. Se asume vía `sts:AssumeRole`, que devuelve credenciales temporales.
-- Recomendación: dar solo los permisos necesarios al rol (igual que con usuarios).
+### Roles IAM: permisos temporales, sin credenciales fijas
+A diferencia de un usuario (acceso permanente con sus propias credenciales), un **rol** es una identidad que se "presta" temporalmente: alguien o algo lo asume, recibe unas credenciales que caducan solas, y cuando termina de usarlo esas credenciales dejan de servir. Esto se controla con dos piezas: una **política de confianza** que dice quién puede asumir el rol, y una **política de permisos** que dice qué puede hacer una vez lo asume (la llamada técnica de por medio es `sts:AssumeRole`).
 
-### Herramientas de auditoría
-- **Informe de credenciales de IAM** (a nivel de cuenta): lista todos los usuarios, último uso de credenciales, políticas asignadas, si tienen MFA.
-- **IAM Access Advisor** (a nivel de usuario): qué servicios tiene permitidos un usuario y cuándo accedió por última vez a cada uno — útil para detectar permisos sobrantes.
+Los roles se usan sobre todo para tres cosas: dar acceso entre distintas cuentas AWS, conectar con sistemas de identidad externos, y — el caso más habitual en el día a día — **darle permisos a un servicio de AWS**, como una instancia EC2 que necesita leer un bucket de S3 sin que tengas que meterle Access Keys a mano.
 
-### Modelo de responsabilidad compartida aplicado a IAM
-- **AWS**: seguridad de la infraestructura/red global, análisis de configuración/vulnerabilidades, conformidad.
-- **Tú**: gestión de usuarios/grupos/roles/políticas, activar MFA, rotar Access Keys, revisar patrones de acceso.
+### Cómo auditar quién tiene acceso a qué
+- El **Informe de credenciales** (a nivel de cuenta completa) lista todos los usuarios, cuándo usaron sus credenciales por última vez, qué políticas tienen y si activaron MFA.
+- El **Access Advisor** (a nivel de un usuario concreto) muestra qué servicios tiene permitido usar y cuándo tocó cada uno por última vez — perfecto para detectar permisos que nadie usa y se pueden retirar.
+
+### La parte de IAM en el modelo de responsabilidad compartida
+AWS se encarga de que la infraestructura de IAM en sí funcione y esté protegida (no puedes "hackear" el servicio de IAM desde fuera). Tú te encargas de todo lo que configuras dentro: qué usuarios existen, qué permisos tienen, si obligas a MFA, si rotas las claves — ver también [[modulo-01-introduccion-cloud-devops]].
 
 ## Comandos clave
 
-*(No hay CLI explícita en las slides — la práctica de este módulo es en consola: crear usuarios, grupos, políticas y roles vía IAM Console.)*
+*(No hay CLI explícita en las slides del curso — la práctica de este módulo es en consola: crear usuarios, grupos, políticas y roles vía IAM Console.)*
 
 ## Notas y gotchas
 
-- **Nunca uses la cuenta root para el día a día** — solo para configuración inicial de la cuenta.
-- Prefiere asignar permisos a **grupos**, no a usuarios individuales — cambias en un sitio y se propaga.
-- Los roles IAM no son solo para usuarios: son la forma estándar de dar permisos a **servicios** (típico examen: "¿cómo le doy a mi EC2 acceso a S3?" → rol IAM, no Access Keys hardcodeadas).
-- Checklist de buenas prácticas del curso: no usar root, un usuario físico = un usuario AWS, permisos vía grupos, mínimo privilegio, política de contraseñas fuerte, MFA activo, roles para servicios, Access Keys solo para CLI/SDK, revisión periódica con Credential Report/Access Advisor, eliminar lo que no se usa, no compartir credenciales.
+- Regla que se repite en todo el curso: **nunca uses la cuenta root para el trabajo diario**, resérvala para tareas de configuración de cuenta.
+- Es mejor gestionar permisos por grupo que uno a uno — cambias en un solo sitio y se propaga a todos los miembros.
+- Pregunta típica de examen: "¿cómo le doy a mi instancia EC2 acceso a S3?" → la respuesta correcta casi siempre es un **rol IAM**, no credenciales metidas a mano en el código.
+- Checklist rápido de buenas prácticas: nada de root para el día a día, un usuario real = un usuario IAM, permisos por grupo, mínimo privilegio, contraseñas fuertes + MFA, roles para servicios, Access Keys reservadas a CLI/SDK, auditar con el Credential Report/Access Advisor, y limpiar lo que no se usa.
 
 ## Recursos
 

@@ -2,46 +2,37 @@
 
 ## Resumen
 
-> Nota del curso: esta sección puede resultar densa si nunca trabajaste con redes — no hace falta entenderlo al 100% a la primera, se refuerza más adelante. Es clave para las certificaciones AWS Solutions Architect Associate y SysOps Administrator.
+> Aviso para mí mismo: esta parte de redes no se asimila del todo a la primera lectura, y no pasa nada — se vuelve a repasar en módulos posteriores según se van usando estos conceptos en la práctica. Aparece también en el temario de las certificaciones Solutions Architect Associate y SysOps Administrator.
 
 ### ¿Qué es una VPC?
-Servicio que permite lanzar recursos AWS en una **red virtual definida por ti**, con control total sobre:
-- Rangos de IP.
-- Subredes.
-- Tablas de rutas.
-- Gateways de red.
+Es tu propia porción aislada de red dentro de AWS, sobre la que decides tú: qué rango de direcciones IP usar, cómo la divides en subredes, cómo enruta el tráfico, y qué puertas de salida/entrada tiene hacia internet. Al meter recursos distintos en subredes distintas puedes aplicar reglas de seguridad diferentes a cada grupo, en vez de tratar toda tu infraestructura como un único bloque.
 
-Mejora la seguridad aislando recursos en distintas subredes y aplicando políticas por subred.
+### La VPC que ya viene incluida
+Cada cuenta nueva de AWS trae de fábrica una VPC por defecto, y si lanzas una instancia EC2 sin decir explícitamente en qué VPC quieres que viva, cae ahí. Esa VPC por defecto ya tiene salida a internet configurada, y cada instancia recibe automáticamente una IP pública y sus correspondientes nombres DNS público/privado.
 
-### VPC por defecto
-- Toda cuenta nueva de AWS trae una **VPC por defecto**.
-- Las EC2 se lanzan ahí si no especificas otra VPC.
-- Tiene conectividad a internet, y las instancias reciben IP pública + nombre DNS público y privado automáticamente.
+### Direccionamiento con CIDR
+Una VPC se define con una notación CIDR: una IP base más una "máscara" tras la barra (ej. `10.0.0.0/24`) que indica cuántos de los 32 bits de la dirección quedan fijos para identificar la red — cuanto más bajo el número tras la barra, más direcciones libres quedan disponibles. AWS limita el tamaño de una VPC entre **/28 como mínimo (16 IPs)** y **/16 como máximo (65.536 IPs)**.
 
-### Direccionamiento (CIDR)
-- **CIDR** = IP base + máscara de red (ej. `10.0.0.0/24`). La máscara indica cuántos bits identifican la red (a menor número tras la `/`, más direcciones disponibles).
-- Rango VPC permitido: **mínimo /28 (16 IPs) — máximo /16 (65.536 IPs)**.
-- Fórmula de direcciones disponibles: `2^(32-máscara) - 5` (AWS siempre reserva 5 direcciones por subred).
+Para saber cuántas direcciones puedes usar realmente, la cuenta es `2^(32 - máscara) - 5`: siempre hay que restar 5, porque AWS se reserva un puñado de direcciones en cada subred, no las deja libres para tus recursos.
 
-### Direcciones reservadas por AWS (ejemplo con `10.0.0.0/24`)
-| Dirección | Uso reservado |
+### Qué direcciones se reserva AWS (ejemplo con una subred `10.0.0.0/24`)
+| Dirección | Para qué la usa AWS |
 |---|---|
-| `10.0.0.0` | Dirección de red |
-| `10.0.0.1` | Router de la VPC |
-| `10.0.0.2` | Reservado por AWS (DNS) |
-| `10.0.0.3` | Reservado para uso futuro |
-| `10.0.0.255` | Dirección de difusión (broadcast) |
+| `10.0.0.0` | Identifica la propia red |
+| `10.0.0.1` | El router interno de la VPC |
+| `10.0.0.2` | Resolución DNS |
+| `10.0.0.3` | Reservada para uso futuro |
+| `10.0.0.255` | Dirección de broadcast |
 
-### Subredes
-- Dividen el espacio de direcciones de la VPC en segmentos más pequeños; cada una tiene su propio rango CIDR, **sin solaparse** con otras subredes de la misma VPC.
-- **Subred pública**: accesible desde internet.
-- **Subred privada**: no accesible desde internet.
-- Patrón típico multi-AZ: una VPC `/16` dividida en subredes públicas y privadas repartidas en 2+ AZs (ej. Subred pública A `10.0.10.0/20`, Subred privada A `10.0.20.0/20`, Subred pública B `10.0.30.0/20`, Subred privada B `10.0.40.0/20`).
+### Dividir en subredes
+Una subred es un trozo del rango de la VPC con su propio CIDR, que no puede solaparse con el de otra subred de la misma VPC. La diferencia entre **pública** (accesible desde internet) y **privada** (no accesible desde fuera) no depende del tamaño ni del rango elegido, sino de cómo esté configurada su tabla de rutas — algo que se verá con más detalle en módulos posteriores.
 
-### Ejercicio de cálculo (para fijar el concepto)
-- VPC `10.1.0.0/16` → 65.536 - 5 = **65.531 IPs** disponibles.
-- Subred A `10.1.0.0/24` → 256 - 5 = **251 IPs**.
-- Subred B `10.1.1.0/24` → 256 - 5 = **251 IPs**.
+Un diseño típico y resistente a fallos reparte subredes públicas y privadas en al menos dos AZ distintas dentro de la misma VPC: por ejemplo, dentro de una VPC `/16`, una subred pública y otra privada en la AZ A, y el mismo par en la AZ B.
+
+### Para fijar el cálculo con un ejemplo
+- Una VPC `10.1.0.0/16` te deja `65.536 - 5 = 65.531` direcciones utilizables.
+- Si dentro divides una subred `10.1.0.0/24`, tienes `256 - 5 = 251` direcciones en esa subred.
+- Otra subred `10.1.1.0/24` en la misma VPC te da, igualmente, `251` direcciones — y no se solapa con la anterior porque el tercer octeto es distinto.
 
 ## Comandos clave
 
@@ -49,8 +40,8 @@ Mejora la seguridad aislando recursos en distintas subredes y aplicando polític
 
 ## Notas y gotchas
 
-- El cálculo de IPs disponibles (`2^(32-máscara) - 5`) es un clásico de examen — practica con distintos tamaños de máscara.
-- No confundir: **subred pública/privada** es una etiqueta lógica que depende de si su tabla de rutas apunta a un Internet Gateway, no de ningún atributo propio del rango CIDR.
+- El cálculo `2^(32-máscara) - 5` conviene tenerlo automatizado mentalmente — aparece mucho en preguntas de examen con distintos tamaños de máscara.
+- No caer en el error de pensar que "pública/privada" es un atributo del propio rango CIDR: es puramente la tabla de rutas la que decide si una subred sale a internet o no.
 
 ## Recursos
 
