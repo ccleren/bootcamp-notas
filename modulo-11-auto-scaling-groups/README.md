@@ -62,8 +62,6 @@ aws autoscaling start-instance-refresh \
 aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names mi-asg
 ```
 
-*(Cuando hagas la demo práctica de este módulo, sustituye estos ejemplos por tus propios comandos reales.)*
-
 ## Notas y gotchas
 
 - El health check que usa el ASG puede venir del propio EC2 o del Load Balancer — hay que saber cuál está activo, cambia qué cuenta como "instancia mala".
