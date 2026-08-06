@@ -101,4 +101,8 @@ aws autoscaling delete-launch-configuration --launch-configuration-name mi-confi
 
 ## Recursos
 
--
+- https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html
+- https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html
+- https://docs.aws.amazon.com/autoscaling/ec2/userguide/schedule_time.html
+- https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-refresh.html
+- https://docs.aws.amazon.com/autoscaling/ec2/userguide/launch-configurations.html
