@@ -79,48 +79,48 @@ CloudWatch recibe automático: códigos 2XX-5XX, `HealthyHostCount`/`UnHealthyHo
 ```bash
 # Crear un Application Load Balancer
 aws elbv2 create-load-balancer \
-  --name mi-alb --subnets <subnet-id-a> <subnet-id-b> \
+  --name <alb-name> --subnets <subnet-id-a> <subnet-id-b> \
   --security-groups <security-group-id> --type application
 
 # Crear un target group con health check
 aws elbv2 create-target-group \
-  --name mi-target-group --protocol HTTP --port 80 --vpc-id <vpc-id> \
+  --name <target-group-name> --protocol HTTP --port 80 --vpc-id <vpc-id> \
   --health-check-path /health
 
 # Registrar instancias en el target group
 aws elbv2 register-targets \
-  --target-group-arn arn:aws:elasticloadbalancing:<region>:<account-id>:targetgroup/mi-target-group/<id> \
+  --target-group-arn arn:aws:elasticloadbalancing:<region>:<account-id>:targetgroup/<target-group-name>/<id> \
   --targets Id=<instance-id>
 
 # Crear el listener (regla de entrada del LB)
 aws elbv2 create-listener \
-  --load-balancer-arn arn:aws:elasticloadbalancing:<region>:<account-id>:loadbalancer/app/mi-alb/<id> \
+  --load-balancer-arn arn:aws:elasticloadbalancing:<region>:<account-id>:loadbalancer/app/<alb-name>/<id> \
   --protocol HTTP --port 80 \
-  --default-actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:<region>:<account-id>:targetgroup/mi-target-group/<id>
+  --default-actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:<region>:<account-id>:targetgroup/<target-group-name>/<id>
 
 # Ver el estado de salud de los targets
 aws elbv2 describe-target-health \
-  --target-group-arn arn:aws:elasticloadbalancing:<region>:<account-id>:targetgroup/mi-target-group/<id>
+  --target-group-arn arn:aws:elasticloadbalancing:<region>:<account-id>:targetgroup/<target-group-name>/<id>
 
 # Añadir una regla de enrutamiento por ruta a un listener existente
 # (ej. /video/* va a un target group distinto del que marca la regla por defecto)
 aws elbv2 create-rule \
-  --listener-arn arn:aws:elasticloadbalancing:<region>:<account-id>:listener/app/mi-alb/<id>/<id2> \
+  --listener-arn arn:aws:elasticloadbalancing:<region>:<account-id>:listener/app/<alb-name>/<id>/<id2> \
   --priority 5 \
   --conditions file://condiciones-ruta.json \
-  --actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:<region>:<account-id>:targetgroup/otro-target-group/<id>
+  --actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:<region>:<account-id>:targetgroup/<target-group-name-2>/<id>
 
 # Ver las reglas configuradas en un listener
 aws elbv2 describe-rules \
-  --listener-arn arn:aws:elasticloadbalancing:<region>:<account-id>:listener/app/mi-alb/<id>/<id2>
+  --listener-arn arn:aws:elasticloadbalancing:<region>:<account-id>:listener/app/<alb-name>/<id>/<id2>
 ```
 
 Limpieza al terminar (borra siempre en este orden — de lo más específico a lo más general):
 ```bash
-aws elbv2 delete-rule --rule-arn arn:aws:elasticloadbalancing:<region>:<account-id>:listener-rule/app/mi-alb/<id>/<id2>/<id3>
-aws elbv2 delete-listener --listener-arn arn:aws:elasticloadbalancing:<region>:<account-id>:listener/app/mi-alb/<id>/<id2>
-aws elbv2 delete-target-group --target-group-arn arn:aws:elasticloadbalancing:<region>:<account-id>:targetgroup/mi-target-group/<id>
-aws elbv2 delete-load-balancer --load-balancer-arn arn:aws:elasticloadbalancing:<region>:<account-id>:loadbalancer/app/mi-alb/<id>
+aws elbv2 delete-rule --rule-arn arn:aws:elasticloadbalancing:<region>:<account-id>:listener-rule/app/<alb-name>/<id>/<id2>/<id3>
+aws elbv2 delete-listener --listener-arn arn:aws:elasticloadbalancing:<region>:<account-id>:listener/app/<alb-name>/<id>/<id2>
+aws elbv2 delete-target-group --target-group-arn arn:aws:elasticloadbalancing:<region>:<account-id>:targetgroup/<target-group-name>/<id>
+aws elbv2 delete-load-balancer --load-balancer-arn arn:aws:elasticloadbalancing:<region>:<account-id>:loadbalancer/app/<alb-name>/<id>
 ```
 
 ## Notas y gotchas

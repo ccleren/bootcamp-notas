@@ -36,41 +36,41 @@ Para propagar un cambio (ej. cambiar el tipo de instancia de la plantilla) sin t
 ```bash
 # Crear una plantilla de lanzamiento
 aws ec2 create-launch-template \
-  --launch-template-name mi-plantilla \
+  --launch-template-name <launch-template-name> \
   --launch-template-data file://launch-template-data.json
 
 # Crear el Auto Scaling Group a partir de esa plantilla
 aws autoscaling create-auto-scaling-group \
-  --auto-scaling-group-name mi-asg \
-  --launch-template LaunchTemplateName=mi-plantilla,Version='$Latest' \
+  --auto-scaling-group-name <asg-name> \
+  --launch-template LaunchTemplateName=<launch-template-name>,Version='$Latest' \
   --min-size 1 --max-size 5 --desired-capacity 2 \
   --vpc-zone-identifier "<subnet-id-a>,<subnet-id-b>" \
-  --target-group-arns arn:aws:elasticloadbalancing:<region>:<account-id>:targetgroup/mi-target-group/<id>
+  --target-group-arns arn:aws:elasticloadbalancing:<region>:<account-id>:targetgroup/<target-group-name>/<id>
 
 # Política de target tracking (ej. mantener CPU media al 40%)
 aws autoscaling put-scaling-policy \
-  --auto-scaling-group-name mi-asg --policy-name cpu-target-tracking \
+  --auto-scaling-group-name <asg-name> --policy-name <policy-name> \
   --policy-type TargetTrackingScaling \
   --target-tracking-configuration '{"PredefinedMetricSpecification":{"PredefinedMetricType":"ASGAverageCPUUtilization"},"TargetValue":40.0}'
 
 # Lanzar un Instance Refresh tras actualizar la plantilla
 aws autoscaling start-instance-refresh \
-  --auto-scaling-group-name mi-asg \
+  --auto-scaling-group-name <asg-name> \
   --preferences '{"MinHealthyPercentage":70}'
 
 # Acción programada (scheduled action) — ej. subir capacidad un día concreto
 aws autoscaling put-scheduled-update-group-action \
-  --auto-scaling-group-name mi-asg --scheduled-action-name subida-lunes \
+  --auto-scaling-group-name <asg-name> --scheduled-action-name <scheduled-action-name> \
   --start-time "2026-08-10T08:00:00Z" --min-size 2 --max-size 8 --desired-capacity 5
 
 # Ver el estado del grupo
-aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names mi-asg
+aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names <asg-name>
 ```
 
 Limpieza al terminar:
 ```bash
-aws autoscaling delete-auto-scaling-group --auto-scaling-group-name mi-asg --force-delete
-aws ec2 delete-launch-template --launch-template-name mi-plantilla
+aws autoscaling delete-auto-scaling-group --auto-scaling-group-name <asg-name> --force-delete
+aws ec2 delete-launch-template --launch-template-name <launch-template-name>
 ```
 
 *(Cuando hagas la demo práctica de este módulo, sustituye estos ejemplos por tus propios comandos reales.)*
@@ -79,18 +79,18 @@ aws ec2 delete-launch-template --launch-template-name mi-plantilla
 Algunos labs todavía usan `create-launch-configuration` en vez de plantillas de lanzamiento — es la versión anterior, más simple pero sin versionado ni todas las opciones modernas. AWS recomienda Launch Template para todo lo nuevo, pero conviene reconocer la sintaxis antigua:
 ```bash
 aws autoscaling create-launch-configuration \
-  --launch-configuration-name mi-config \
+  --launch-configuration-name <launch-configuration-name> \
   --image-id <ami-id> --instance-type t2.micro \
   --key-name <key-pair-name> --security-groups <security-group-id>
 
 aws autoscaling create-auto-scaling-group \
-  --auto-scaling-group-name mi-asg \
-  --launch-configuration-name mi-config \
+  --auto-scaling-group-name <asg-name> \
+  --launch-configuration-name <launch-configuration-name> \
   --availability-zones eu-west-1a eu-west-1b \
   --min-size 1 --max-size 3 --desired-capacity 2
 
 # Limpieza (una launch configuration no se puede editar, solo borrar y crear otra)
-aws autoscaling delete-launch-configuration --launch-configuration-name mi-config
+aws autoscaling delete-launch-configuration --launch-configuration-name <launch-configuration-name>
 ```
 
 ## Notas y gotchas

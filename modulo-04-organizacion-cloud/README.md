@@ -47,16 +47,16 @@ aws organizations create-organization --feature-set ALL
 
 # Crear una cuenta miembro nueva
 aws organizations create-account \
-  --email produccion+cuenta@midominio.com \
-  --account-name "Produccion"
+  --email <email> \
+  --account-name "<account-name>"
 
 # Crear una Unidad Organizativa (OU) bajo la raíz
 aws organizations create-organizational-unit \
-  --parent-id <root-id> --name "Produccion-OU"
+  --parent-id <root-id> --name "<ou-name>"
 
 # Crear y aplicar un SCP
 aws organizations create-policy \
-  --name DenyS3 --type SERVICE_CONTROL_POLICY \
+  --name <policy-name> --type SERVICE_CONTROL_POLICY \
   --description "Deniega el acceso a S3" \
   --content file://deny-s3.json
 aws organizations attach-policy \

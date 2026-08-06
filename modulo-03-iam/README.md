@@ -59,30 +59,30 @@ IAM = servicio **global** que decide quién puede hacer qué dentro de tu cuenta
 
 ```bash
 # Usuarios y grupos
-aws iam create-user --user-name juan
-aws iam create-group --group-name Desarrolladores
-aws iam add-user-to-group --user-name juan --group-name Desarrolladores
+aws iam create-user --user-name <user-name>
+aws iam create-group --group-name <group-name>
+aws iam add-user-to-group --user-name <user-name> --group-name <group-name>
 
 # Adjuntar una política gestionada por AWS a un grupo
 aws iam attach-group-policy \
-  --group-name Desarrolladores \
+  --group-name <group-name> \
   --policy-arn arn:aws:iam::aws:policy/ReadOnlyAccess
 
 # Crear una política propia a partir de un JSON local
 aws iam create-policy \
-  --policy-name MiPolitica \
+  --policy-name <policy-name> \
   --policy-document file://politica.json
 
 # Crear un rol para que lo asuma un servicio (ej. EC2)
 aws iam create-role \
-  --role-name RolParaEC2 \
+  --role-name <role-name> \
   --assume-role-policy-document file://trust-policy.json
 aws iam attach-role-policy \
-  --role-name RolParaEC2 \
+  --role-name <role-name> \
   --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
 
 # Access Keys para un usuario (para CLI/SDK)
-aws iam create-access-key --user-name juan
+aws iam create-access-key --user-name <user-name>
 
 # Auditoría
 aws iam generate-credential-report
