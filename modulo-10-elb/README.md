@@ -101,6 +101,26 @@ aws elbv2 create-listener \
 # Ver el estado de salud de los targets
 aws elbv2 describe-target-health \
   --target-group-arn arn:aws:elasticloadbalancing:<region>:<account-id>:targetgroup/mi-target-group/<id>
+
+# Añadir una regla de enrutamiento por ruta a un listener existente
+# (ej. /video/* va a un target group distinto del que marca la regla por defecto)
+aws elbv2 create-rule \
+  --listener-arn arn:aws:elasticloadbalancing:<region>:<account-id>:listener/app/mi-alb/<id>/<id2> \
+  --priority 5 \
+  --conditions file://condiciones-ruta.json \
+  --actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:<region>:<account-id>:targetgroup/otro-target-group/<id>
+
+# Ver las reglas configuradas en un listener
+aws elbv2 describe-rules \
+  --listener-arn arn:aws:elasticloadbalancing:<region>:<account-id>:listener/app/mi-alb/<id>/<id2>
+```
+
+Limpieza al terminar (borra siempre en este orden — de lo más específico a lo más general):
+```bash
+aws elbv2 delete-rule --rule-arn arn:aws:elasticloadbalancing:<region>:<account-id>:listener-rule/app/mi-alb/<id>/<id2>/<id3>
+aws elbv2 delete-listener --listener-arn arn:aws:elasticloadbalancing:<region>:<account-id>:listener/app/mi-alb/<id>/<id2>
+aws elbv2 delete-target-group --target-group-arn arn:aws:elasticloadbalancing:<region>:<account-id>:targetgroup/mi-target-group/<id>
+aws elbv2 delete-load-balancer --load-balancer-arn arn:aws:elasticloadbalancing:<region>:<account-id>:loadbalancer/app/mi-alb/<id>
 ```
 
 ## Notas y gotchas

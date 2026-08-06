@@ -42,6 +42,8 @@ Tu propia red aislada dentro de AWS: eliges rango de IPs, subredes, tablas de ru
 aws ec2 create-vpc --cidr-block 10.1.0.0/16
 
 # Crear una subred dentro de esa VPC, en una AZ concreta
+# (--availability-zone-id también vale, ej. use1-az1, si prefieres fijar
+# el ID físico de la AZ en vez de su nombre lógico por cuenta)
 aws ec2 create-subnet \
   --vpc-id <vpc-id> \
   --cidr-block 10.1.0.0/24 \
@@ -50,6 +52,9 @@ aws ec2 create-subnet \
 # Listar VPCs y subredes existentes
 aws ec2 describe-vpcs
 aws ec2 describe-subnets --filters "Name=vpc-id,Values=<vpc-id>"
+
+# Borrar una subred (limpieza)
+aws ec2 delete-subnet --subnet-id <subnet-id>
 ```
 
 *(Security Groups, NACLs, Internet Gateway y NAT se ven en el [Módulo 06 — EC2 Básico](../modulo-06-ec2-basico/README.md) y módulos posteriores.)*

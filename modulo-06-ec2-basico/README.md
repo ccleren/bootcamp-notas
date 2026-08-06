@@ -71,21 +71,45 @@ ssh -i /path/key-pair-name.pem ec2-user@instance-public-dns-name
 chmod 400 nombre-del-archivo.pem
 ```
 
+Crear el Security Group y el par de claves antes de lanzar nada:
+```bash
+# Crear el Security Group
+aws ec2 create-security-group \
+  --group-name MiSecurityGroup --description "Mi security group" --vpc-id <vpc-id>
+
+# Abrir el puerto 22 (SSH) solo desde tu IP, y el 80 (HTTP) a todo el mundo
+aws ec2 authorize-security-group-ingress \
+  --group-id <security-group-id> --protocol tcp --port 22 --cidr <tu-ip>/32
+aws ec2 authorize-security-group-ingress \
+  --group-id <security-group-id> --protocol tcp --port 80 --cidr 0.0.0.0/0
+
+# Crear un par de claves (guarda el .pem que devuelve, no se puede recuperar después)
+aws ec2 create-key-pair --key-name mi-clave --query "KeyMaterial" --output text > mi-clave.pem
+```
+
 Gestionar instancias por CLI (alternativa a la consola):
 ```bash
 # Lanzar una instancia con User Data
 aws ec2 run-instances \
-  --image-id <ami-id> --instance-type t2.micro \
+  --image-id <ami-id> --instance-type t2.micro --count 1 \
   --key-name <key-pair-name> --security-group-ids <security-group-id> \
-  --subnet-id <subnet-id> \
+  --subnet-id <subnet-id> --associate-public-ip-address \
   --user-data file://user-data.sh
+
+# Etiquetar la instancia recién creada
+aws ec2 create-tags --resources <instance-id> --tags Key=Name,Value="Servidor Web 1"
 
 # Ver el estado de las instancias
 aws ec2 describe-instances --query "Reservations[].Instances[].[InstanceId,State.Name]"
 
-# Parar / terminar
+# Parar / terminar (admite varios IDs a la vez)
 aws ec2 stop-instances --instance-ids <instance-id>
-aws ec2 terminate-instances --instance-ids <instance-id>
+aws ec2 terminate-instances --instance-ids <instance-id> <instance-id-2>
+```
+
+Limpieza al terminar (evita costes olvidados):
+```bash
+aws ec2 delete-security-group --group-id <security-group-id>
 ```
 
 ## Notas y gotchas
