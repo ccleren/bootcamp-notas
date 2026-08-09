@@ -27,8 +27,9 @@ Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/READM
 | 08 | AWS Systems Manager | ✅ Completo |
 | 09 | Almacenamiento de EC2 (AMI, EBS, Instance Store, EFS) | ✅ Completo |
 | 10 | Elastic Load Balancing (ELB) | ✅ Completo |
-| 11 | Auto Scaling Groups (ASG) | ✅ En curso |
-| 12 | Monitorización (CloudWatch, Logs, Alarms, EventBridge, X-Ray, CloudTrail) | 🟡 En curso |
+| 11 | Auto Scaling Groups (ASG) | ✅ Completo |
+| 12 | Monitorización (CloudWatch, Logs, Alarms, EventBridge, X-Ray, CloudTrail) | ✅ Completo |
+| 13 | S3 (Simple Storage Service) | 🟡 En curso |
 
 Leyenda: 🟡 en curso · ✅ completo
 
@@ -48,5 +49,6 @@ bootcamp-notas/
 ├── modulo-09-almacenamiento-ec2/
 ├── modulo-10-elb/
 ├── modulo-11-auto-scaling-groups/
-└── modulo-12-monitorizacion-cloudwatch/
+├── modulo-12-monitorizacion-cloudwatch/
+└── modulo-13-s3/
 ```
