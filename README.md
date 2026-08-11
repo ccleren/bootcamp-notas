@@ -29,7 +29,8 @@ Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/READM
 | 10 | Elastic Load Balancing (ELB) | ✅ Completo |
 | 11 | Auto Scaling Groups (ASG) | ✅ Completo |
 | 12 | Monitorización (CloudWatch, Logs, Alarms, EventBridge, X-Ray, CloudTrail) | ✅ Completo |
-| 13 | S3 (Simple Storage Service) | 🟡 En curso |
+| 13 | S3 (Simple Storage Service) | ✅ Completo |
+| 14 | S3 - Avanzado (lifecycle, CORS, MFA Delete, presigned URLs, Object Lock, Access Points) | ✅ Completo |
 
 Leyenda: 🟡 en curso · ✅ completo
 
@@ -50,5 +51,6 @@ bootcamp-notas/
 ├── modulo-10-elb/
 ├── modulo-11-auto-scaling-groups/
 ├── modulo-12-monitorizacion-cloudwatch/
-└── modulo-13-s3/
+├── modulo-13-s3/
+└── modulo-14-s3-avanzado/
 ```
