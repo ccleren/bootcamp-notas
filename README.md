@@ -32,7 +32,8 @@ Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/READM
 | 13 | S3 (Simple Storage Service) | ✅ Completo |
 | 14 | S3 - Avanzado (lifecycle, CORS, MFA Delete, presigned URLs, Object Lock, Access Points) | ✅ Completo |
 | 15 | AWS Lambda | ✅ Completo |
-| 16 | Route 53 | 🟡 En curso |
+| 16 | Route 53 | ✅ Completo |
+| 17 | CloudFront | 🟡 En curso |
 
 Leyenda: 🟡 en curso · ✅ completo
 
@@ -55,5 +56,6 @@ bootcamp-notas/
 ├── modulo-12-monitorizacion-cloudwatch/
 ├── modulo-13-s3/
 ├── modulo-14-s3-avanzado/
-└── modulo-15-lambda/
+├── modulo-15-lambda/
+└── modulo-16-route53/
 ```
