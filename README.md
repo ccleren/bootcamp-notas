@@ -34,6 +34,7 @@ Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/READM
 | 15 | AWS Lambda | ✅ Completo |
 | 16 | Route 53 | ✅ Completo |
 | 17 | CloudFront y AWS Global Accelerator | ✅ Completo |
+| 18 | Caso práctico real: WebApp con Angular en AWS | ✅ Completo |
 
 Leyenda: 🟡 en curso · ✅ completo
 
@@ -58,5 +59,6 @@ bootcamp-notas/
 ├── modulo-14-s3-avanzado/
 ├── modulo-15-lambda/
 ├── modulo-16-route53/
-└── modulo-17-cloudfront/
+├── modulo-17-cloudfront/
+└── modulo-18-caso-practico-webapp-angular/
 ```
