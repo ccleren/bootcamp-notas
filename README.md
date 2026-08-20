@@ -20,7 +20,7 @@ Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/READM
 | 01 | Introducción a Cloud Computing y DevOps | ✅ Completo |
 | 02 | Infraestructura global del Cloud de AWS | ✅ Completo |
 | 03 | AWS IAM | ✅ Completo |
-| 04 | Crear una organización en el Cloud | ✅ Completo |
+| 04 | Caso práctico real: Organización en el Cloud | ✅ Completo |
 | 05 | VPC — conceptos fundamentales | ✅ Completo |
 | 06 | EC2 - Básico | ✅ Completo |
 | 07 | EC2 - Avanzado (Spot, CloudWatch Agent) | ✅ Completo |

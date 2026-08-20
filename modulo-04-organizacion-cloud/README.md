@@ -1,4 +1,4 @@
-# Módulo 04 — Crear una organización en el Cloud
+# Módulo 04 — Caso práctico real: Organización en el Cloud
 
 ## Resumen
 
