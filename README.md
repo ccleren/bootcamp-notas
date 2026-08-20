@@ -37,6 +37,8 @@ Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/READM
 | 18 | Caso práctico real: WebApp con Angular en AWS | ✅ Completo |
 | 19 | Docker en AWS (ECR, ECS, Fargate, EKS) | ✅ Completo |
 | 20 | Caso práctico real: Arquitectura ECS | ✅ Completo |
+| 21 | Kubernetes - Nivel 1 | ✅ Completo |
+| 22 | Kubernetes - Nivel 2 | ✅ Completo |
 
 Leyenda: 🟡 en curso · ✅ completo
 
@@ -64,5 +66,7 @@ bootcamp-notas/
 ├── modulo-17-cloudfront/
 ├── modulo-18-caso-practico-webapp-angular/
 ├── modulo-19-docker-ecs/
-└── modulo-20-caso-practico-arquitectura-ecs/
+├── modulo-20-caso-practico-arquitectura-ecs/
+├── modulo-21-kubernetes-nivel-1/
+└── modulo-22-kubernetes-nivel-2/
 ```
