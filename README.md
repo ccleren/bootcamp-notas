@@ -36,6 +36,7 @@ Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/READM
 | 17 | CloudFront y AWS Global Accelerator | ✅ Completo |
 | 18 | Caso práctico real: WebApp con Angular en AWS | ✅ Completo |
 | 19 | Docker en AWS (ECR, ECS, Fargate, EKS) | ✅ Completo |
+| 20 | Caso práctico real: Arquitectura ECS | ✅ Completo |
 
 Leyenda: 🟡 en curso · ✅ completo
 
@@ -62,5 +63,6 @@ bootcamp-notas/
 ├── modulo-16-route53/
 ├── modulo-17-cloudfront/
 ├── modulo-18-caso-practico-webapp-angular/
-└── modulo-19-docker-ecs/
+├── modulo-19-docker-ecs/
+└── modulo-20-caso-practico-arquitectura-ecs/
 ```
