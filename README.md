@@ -50,7 +50,7 @@ bootcamp-notas/
 ├── modulo-01-introduccion-cloud-devops/
 ├── modulo-02-infraestructura-global/
 ├── modulo-03-iam/
-├── modulo-04-organizacion-cloud/
+├── modulo-04-caso-practico-organizacion-cloud/
 ├── modulo-05-vpc/
 ├── modulo-06-ec2-basico/
 ├── modulo-07-ec2-avanzado/

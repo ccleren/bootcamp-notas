@@ -53,7 +53,7 @@ aws configure list
 
 ## Notas y gotchas
 
-- El truco del `+` en Gmail es muy útil para el [Módulo 04 — Organización en el Cloud](../modulo-04-organizacion-cloud/README.md), donde se practica con varias cuentas.
+- El truco del `+` en Gmail es muy útil para el [Módulo 04 — Caso práctico real: Organización en el Cloud](../modulo-04-caso-practico-organizacion-cloud/README.md), donde se practica con varias cuentas.
 - No asumas que un servicio nuevo está disponible en tu región habitual — conviene comprobarlo antes de diseñar sobre él.
 
 ## Recursos
