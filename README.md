@@ -40,6 +40,7 @@ Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/READM
 | 21 | Kubernetes - Nivel 1 | ✅ Completo |
 | 22 | Kubernetes - Nivel 2 | ✅ Completo |
 | 23 | Caso práctico real: Kubernetes en AWS | ✅ Completo |
+| 24 | Terraform | ✅ Completo |
 
 Leyenda: 🟡 en curso · ✅ completo
 
@@ -70,5 +71,6 @@ bootcamp-notas/
 ├── modulo-20-caso-practico-arquitectura-ecs/
 ├── modulo-21-kubernetes-nivel-1/
 ├── modulo-22-kubernetes-nivel-2/
-└── modulo-23-caso-practico-kubernetes-aws/
+├── modulo-23-caso-practico-kubernetes-aws/
+└── modulo-24-terraform/
 ```
