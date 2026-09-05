@@ -235,6 +235,7 @@ Resources:
 ### Recursos personalizados (Custom Resources)
 - Para recursos aún no soportados por CloudFormation, lógica de aprovisionamiento personalizada, o ejecutar scripts en creación/actualización/borrado (ej. vaciar un bucket S3 antes de eliminarlo).
 - Respaldados normalmente por una función Lambda (o SNS), referenciada vía `ServiceToken`.
+- Se definen en plantilla con `AWS::CloudFormation::CustomResource` o `Custom::MyCustomResourceTypeName`
 
 ### StackSets
 - Crear/actualizar/eliminar el mismo stack en **múltiples cuentas y regiones** con una sola operación.

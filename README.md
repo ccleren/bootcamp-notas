@@ -43,6 +43,7 @@ Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/READM
 | 24 | Terraform | ✅ Completo |
 | 25 | Proyecto práctico real: Terraform en AWS | ✅ Completo |
 | 26 | AWS CloudFormation | ✅ Completo |
+| 27 | Jenkins | ✅ Completo |
 
 Leyenda: 🟡 en curso · ✅ completo
 
@@ -76,5 +77,6 @@ bootcamp-notas/
 ├── modulo-23-caso-practico-kubernetes-aws/
 ├── modulo-24-terraform/
 ├── modulo-25-proyecto-terraform-aws/
-└── modulo-26-cloudformation/
+├── modulo-26-cloudformation/
+└── modulo-27-jenkins/
 ```
