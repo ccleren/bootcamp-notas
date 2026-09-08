@@ -46,6 +46,7 @@ Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/READM
 | 27 | Jenkins | ✅ Completo |
 | 28 | Introducción a las bases de datos de AWS | ✅ Completo |
 | 29 | Bases de datos relacionales | ✅ Completo |
+| 30 | Bases de datos no relacionales | ✅ Completo |
 
 Leyenda: 🟡 en curso · ✅ completo
 
@@ -82,5 +83,6 @@ bootcamp-notas/
 ├── modulo-26-cloudformation/
 ├── modulo-27-jenkins/
 ├── modulo-28-introduccion-bases-de-datos/
-└── modulo-29-bases-de-datos-relacionales/
+├── modulo-29-bases-de-datos-relacionales/
+└── modulo-30-bases-de-datos-no-relacionales/
 ```
