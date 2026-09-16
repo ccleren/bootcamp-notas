@@ -49,6 +49,9 @@ Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/READM
 | 30 | Bases de datos no relacionales | ✅ Completo |
 | 31 | Mensajería en AWS (SQS y SNS) | ✅ Completo |
 | 32 | Analíticas | ✅ Completo |
+| 33 | Proyecto práctico real: Seguimiento de ubicación | ✅ Completo |
+| 34 | Python en AWS: Boto3 | ✅ Completo |
+| 35 | Ansible | ✅ Completo |
 
 Leyenda: 🟡 en curso · ✅ completo
 
@@ -88,5 +91,8 @@ bootcamp-notas/
 ├── modulo-29-bases-de-datos-relacionales/
 ├── modulo-30-bases-de-datos-no-relacionales/
 ├── modulo-31-mensajeria/
-└── modulo-32-analiticas/
+├── modulo-32-analiticas/
+├── modulo-33-proyecto-seguimiento-ubicacion/
+├── modulo-34-python-boto3/
+└── modulo-35-ansible/
 ```
