@@ -52,6 +52,7 @@ Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/READM
 | 33 | Proyecto práctico real: Seguimiento de ubicación | ✅ Completo |
 | 34 | Python en AWS: Boto3 | ✅ Completo |
 | 35 | Ansible | ✅ Completo |
+| 36 | Monitorización y observabilidad (Prometheus, Grafana, Loki) | ✅ Completo |
 
 Leyenda: 🟡 en curso · ✅ completo
 
@@ -94,5 +95,6 @@ bootcamp-notas/
 ├── modulo-32-analiticas/
 ├── modulo-33-proyecto-seguimiento-ubicacion/
 ├── modulo-34-python-boto3/
-└── modulo-35-ansible/
+├── modulo-35-ansible/
+└── modulo-36-monitorizacion-observabilidad/
 ```
