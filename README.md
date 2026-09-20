@@ -53,6 +53,7 @@ Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/READM
 | 34 | Python en AWS: Boto3 | ✅ Completo |
 | 35 | Ansible | ✅ Completo |
 | 36 | Monitorización y observabilidad (Prometheus, Grafana, Loki) | ✅ Completo |
+| 37 | Fundamentos de IA y Machine Learning (ML) | ✅ Completo |
 
 Leyenda: 🟡 en curso · ✅ completo
 
@@ -96,5 +97,6 @@ bootcamp-notas/
 ├── modulo-33-proyecto-seguimiento-ubicacion/
 ├── modulo-34-python-boto3/
 ├── modulo-35-ansible/
-└── modulo-36-monitorizacion-observabilidad/
+├── modulo-36-monitorizacion-observabilidad/
+└── modulo-37-fundamentos-ia-ml/
 ```
