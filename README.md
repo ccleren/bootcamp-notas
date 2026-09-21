@@ -55,6 +55,8 @@ Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/READM
 | 36 | Monitorización y observabilidad (Prometheus, Grafana, Loki) | ✅ Completo |
 | 37 | Fundamentos de IA y Machine Learning (ML) | ✅ Completo |
 | 38 | IA preentrenada de AWS | ✅ Completo |
+| 39 | Proyecto práctico: Reconocimiento con IA | 🟡 En curso |
+| 40 | Fundamentos de IA Generativa (GenAI) | ✅ Completo |
 
 Leyenda: 🟡 en curso · ✅ completo
 
@@ -100,5 +102,6 @@ bootcamp-notas/
 ├── modulo-35-ansible/
 ├── modulo-36-monitorizacion-observabilidad/
 ├── modulo-37-fundamentos-ia-ml/
-└── modulo-38-ia-preentrenada-aws/
+├── modulo-38-ia-preentrenada-aws/
+└── modulo-40-fundamentos-ia-generativa/
 ```
