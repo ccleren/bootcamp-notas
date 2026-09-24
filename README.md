@@ -58,6 +58,8 @@ Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/READM
 | 39 | Proyecto práctico: Reconocimiento con IA | 🟡 En curso |
 | 40 | Fundamentos de IA Generativa (GenAI) | ✅ Completo |
 | 41 | Amazon Bedrock | ✅ Completo |
+| 42 | Proyecto práctico: Portal inmobiliario con IA | 🟡 En curso |
+| 43 | Prompt Engineering con Amazon Q | ✅ Completo |
 
 Leyenda: 🟡 en curso · ✅ completo
 
@@ -105,5 +107,6 @@ bootcamp-notas/
 ├── modulo-37-fundamentos-ia-ml/
 ├── modulo-38-ia-preentrenada-aws/
 ├── modulo-40-fundamentos-ia-generativa/
-└── modulo-41-amazon-bedrock/
+├── modulo-41-amazon-bedrock/
+└── modulo-43-prompt-engineering-amazon-q/
 ```
