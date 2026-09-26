@@ -60,6 +60,7 @@ Cuando empiece un módulo nuevo, copio `_plantilla.md` a `modulo-XX-nombre/READM
 | 41 | Amazon Bedrock | ✅ Completo |
 | 42 | Proyecto práctico: Portal inmobiliario con IA | 🟡 En curso |
 | 43 | Prompt Engineering con Amazon Q | ✅ Completo |
+| 44 | Amazon SageMaker | ✅ Completo |
 
 Leyenda: 🟡 en curso · ✅ completo
 
@@ -108,5 +109,6 @@ bootcamp-notas/
 ├── modulo-38-ia-preentrenada-aws/
 ├── modulo-40-fundamentos-ia-generativa/
 ├── modulo-41-amazon-bedrock/
-└── modulo-43-prompt-engineering-amazon-q/
+├── modulo-43-prompt-engineering-amazon-q/
+└── modulo-44-amazon-sagemaker/
 ```
